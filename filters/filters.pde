@@ -51,7 +51,6 @@ class Filters {
     int[] nextDir = new int[2];
     int countPerSurface;
 
-    
     //Para cada superficie
     for(int i=0;i<nSurface;i++)
     {
