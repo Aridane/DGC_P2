@@ -1,7 +1,7 @@
 PrintWriter output;
 void setup(){
   output = createWriter("newMap.txt");
-  Filters filter = new Filters(60,80,"C:\\Users\\Aridane\\ULPGC\\5º\\2º Cuatrimestre\\DGC\\kin.txt");
+  Filters filter = new Filters(60,80,"C:\\Users\\Aridane\\ULPGC\\5º\\2º Cuatrimestre\\DGC\\kin2.txt");
   filter.deleteSparePointsByDepth();
   int [][] mat = filter.getReducedMatrix();
   for (int i=0;i<60;i++){
@@ -12,4 +12,5 @@ void setup(){
   }
   output.flush();
   output.close();
+  println("........................");
 }
