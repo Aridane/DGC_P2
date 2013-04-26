@@ -238,7 +238,7 @@ class Filters {
       vertex[1] = borderPoints[i][0][1];
       for(int j=0;j<numberBorderPoints[i];j++)
       {
-        isLine(
+       // isLine(
       }
     }  
   }
