@@ -228,19 +228,186 @@ class Filters {
   //@param | borderPoints -> los puntos del borde ordenados
   //@param | nSurface -> numero de superficies de la imagen
   //@param | numberBorderPoints ->
-  void deleteUselessVertexes(int[][][] vertexes,int[][][] borderPoints,int nSurface,int[] numberBorderPoints)
+  void deleteUselessVertexes(int[][][] vertexes,int[] count,int[][][] borderPoints,int nSurface,int[] numberBorderPoints)
   {
-    int[] vertex = new int[2];
+    int[] initialVertex = new int[2];
+    int[] actualVertex = new int[2];
+    int initialIndex;
+    int j ;
     for(int i=0;i<nSurface;i++)
     {
-      vertex[0] = borderPoints[i][0][0]; 
-      vertex[1] = borderPoints[i][0][1];
-      for(int j=0;j<numberBorderPoints[i];j++)
+      count[i] = 1;
+      initialIndex = 0;
+      initialVertex[0] = borderPoints[i][0][0]; 
+      initialVertex[1] = borderPoints[i][0][1];
+      vertexes[i][0][0] = initialVertex[0];
+      vertexes[i][0][1] = initialVertex[1];
+      actualVertex[0] = borderPoints[i][1][0];
+      actualVertex[1] = borderPoints[i][1][1];
+      j = 2;
+      while(j<numberBorderPoints[i]+1)
       {
-       // isLine(
+
+        if(!isLine(initialVertex,actualVertex,initialIndex,borderPoints[i]))
+        {
+          println("NO LINEA");
+          initialVertex[0] = borderPoints[i][j-2][0];
+          initialVertex[1] = borderPoints[i][j-2][1];
+          initialIndex = j-2;
+          vertexes[i][count[i]][0] = borderPoints[i][j-2][0];
+          vertexes[i][count[i]][1] = borderPoints[i][j-2][1];
+          count[i]++;
+        }
+        else 
+        {
+          if(j < numberBorderPoints[i])
+          {
+            actualVertex[0] = borderPoints[i][j][0];
+            actualVertex[1] = borderPoints[i][j][1];
+          }
+          j++;
+        }
       }
+      vertexes[i][count[i]][0] = borderPoints[i][numberBorderPoints[i]-1][0];
+      vertexes[i][count[i]][1] = borderPoints[i][numberBorderPoints[i]-1][1];
+      count[i]++;
     }  
   }
   
+  
+  boolean isLine(int[] iniVertex,int[] endVertex,int initialIndex,int[][] borderPoints)
+  {
+    println("iniVertex = " + iniVertex[0] + " " + iniVertex[1]);
+    println("endVertex = " + endVertex[0] + " " + endVertex[1]);
+    println("tam line points = " + (int)(Math.floor(sqrt((iniVertex[0]-endVertex[0])*(iniVertex[0]-endVertex[0])+(iniVertex[1]-endVertex[1])*(iniVertex[1]-endVertex[1])))+1));
+    int[][] linePoints = new int[(int)Math.floor(sqrt((iniVertex[0]-endVertex[0])*(iniVertex[0]-endVertex[0])+(iniVertex[1]-endVertex[1])*(iniVertex[1]-endVertex[1])))+1][2];
+    int[] which = new int[1];
+    int numberPoints = getPointsBresenham(iniVertex[0],iniVertex[1],endVertex[0],endVertex[1],linePoints,0,which);
+    println("line points");
+    for(int i=0;i<numberPoints;i++)
+    {
+      println("line " + linePoints[i][0] + " " + linePoints[i][1]);
+      println("border " + borderPoints[initialIndex+i][0] + " " + borderPoints[initialIndex+i][1]);
+    }
+    if(which[0] == 0)
+    {
+      for(int i=0;i<numberPoints;i++)
+      {
+        if((borderPoints[initialIndex+i][0] != linePoints[i][0]) || (borderPoints[initialIndex+i][1] != linePoints[i][1])) return false;
+      }
+      return true;
+    }
+    else
+    {
+      for(int i=0;i<numberPoints;i++)
+      {
+        if((borderPoints[initialIndex+i][0] != linePoints[numberPoints-1-i][0]) || (borderPoints[initialIndex+i][1] != linePoints[numberPoints-1-i][1])) return false;
+      }
+      return true;      
+    }
+  }
+  
+  int getPointsBresenham (int x0,int y0,int x1,int y1,int[][] linePoints,int numberPoints,int[] which)
+  {
+    int R = 0;
+    int A;
+    int B;
+    int p;
+    int xk;
+    int yk;
+    int i;
+    int number;
+    int Count = 0;
+    if ((x0 != x1) || (y0 != y1))
+    {
+      if ((abs(y1-y0)>=abs(x1-x0)))
+      {
+        if (y1 < y0)
+        {
+          number = getPointsBresenham (x1,y1,x0,y0,linePoints,numberPoints,which);
+          which[0] = 1;
+          return number;
+        }
+        else
+        {
+          println("numberPoints = " + numberPoints);
+          linePoints[numberPoints][0] = x0;
+          linePoints[numberPoints][1] = y0;
+          numberPoints++;
+          if (x1 > x0) R=1;
+          if (x1 < x0) R=-1;
+          A=2*abs((x1-x0));
+          B=A-2*abs(y1-y0);
+          p=A-abs(y1-y0);
+          xk=x0;
+          for (yk=y0; yk<y1; yk++)
+          {
+            if (p<=0)
+            {
+              linePoints[numberPoints][0] = xk;
+              linePoints[numberPoints][1] = yk+1;
+              numberPoints++;
+              p=p+A;
+            }
+            else
+            {
+              linePoints[numberPoints][0] = xk+R;
+              linePoints[numberPoints][1] = yk+1;
+              numberPoints++;
+              p=p+B;
+              xk=xk+R;
+            }
+          }
+          which[0] = 0;
+          return numberPoints;
+        }
+      }
+      else 
+      {
+        if (x1 < x0)
+        {
+          number = getPointsBresenham(x1,y1,x0,y0,linePoints,numberPoints,which);
+          which[0] = 1;
+          return number;
+        }
+        else
+        {
+          println("numberPoints = " + numberPoints);
+          linePoints[numberPoints][0] = x0;
+          linePoints[numberPoints][1] = y0;
+          numberPoints++;
+          if (y1 > y0) R=1;
+          if (y1 < y0) R=-1;
+          A=2*abs((y1-y0));
+          B=A-2*(x1-x0);
+          p=A-(x1-x0);
+          yk=y0;
+          for (xk=x0; xk<x1; xk++)
+          {
+            println("x1 = " + x1 + " xk = " + xk);
+            if (p<=0) 
+            {
+              linePoints[numberPoints][0] = xk+1;
+              linePoints[numberPoints][1] = yk;
+              numberPoints++;
+              p=p+A;
+            }
+            else
+            {
+              println("number points interior = " + numberPoints);
+              linePoints[numberPoints][0] = xk+1;
+              linePoints[numberPoints][1] = yk+R;
+              numberPoints++;
+              p=p+B;
+              yk=yk+R;
+            }        
+          }
+          which[0] = 0;
+          return numberPoints;
+        }
+      }
+    }
+    return 0;
+  }
   
 }
