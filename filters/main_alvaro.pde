@@ -1,5 +1,5 @@
 
-
+/*
 void setup()
 {
   int[][] image = {{0, 0, 0, 0, 0, 0, 0, 0},
@@ -28,4 +28,4 @@ void setup()
   {
     println(vertexes[0][i][0] + " " + vertexes[0][i][1]);
   }
-}
+}*/

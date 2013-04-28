@@ -231,7 +231,8 @@ public class Filters {
       //Mientras el punto actual sea distinto del de partida (dado por borderPoints)
       while((actualPoint[0] != borderPoints[i][0]) || (actualPoint[1] != borderPoints[i][1]))
       {
-        getActualPointAndNextDir(nextPoint,nextDir,actualPoint,dir,borderImage,borderImage[borderPoints[i][1]][borderPoints[i][0]]);
+        //getActualPointAndNextDir(nextPoint,nextDir,actualPoint,dir,borderImage,borderImage[borderPoints[i][1]][borderPoints[i][0]]);
+        getActualPointAndNextDir(nextPoint,nextDir,actualPoint,dir,borderImage,0);
         actualPoint[0] = nextPoint[0];
         actualPoint[1] = nextPoint[1];
         dir[0] = nextDir[0];
@@ -251,42 +252,42 @@ public class Filters {
 
   void getInitialDir(int[] dir,int x,int y,int[][] borderImage)
   {
-      if(borderImage[y + 1][x] == borderImage[y][x])
+      if((y+1 >= 0) && (x >= 0) && (y+1 < borderImage.length) && (y+1 < borderImage[0].length) && (borderImage[y + 1][x] == borderImage[y][x]))
       {
         dir[0] = 0;
         dir[1] = 1;
       }
-      if(borderImage[y][x + 1] == borderImage[y][x])
+      if((y >= 0) && (x+1 >= 0) && (y < borderImage.length) && (x+1 < borderImage[0].length) && (borderImage[y][x + 1] == borderImage[y][x]))
       {
         dir[0] = 1;
         dir[1] = 0;
       }
-      if(borderImage[y + 1][x - 1] == borderImage[y][x])
+      if((y+1 >= 0) && (x-1 >= 0) && (y+1 < borderImage.length) && (x-1 < borderImage[0].length) && (borderImage[y + 1][x - 1] == borderImage[y][x]))
       {
         dir[0] = -1;
         dir[1] = 1;
       }
-      if(borderImage[y - 1][x + 1] == borderImage[y][x])
+      if((y-1 >= 0) && (x+1 >= 0) && (y-1 < borderImage.length) && (x+1 < borderImage[0].length) && (borderImage[y - 1][x + 1] == borderImage[y][x]))
       {
         dir[0] = 1;
         dir[1] = -1;
       }
-      if(borderImage[y - 1][x] == borderImage[y][x])
+      if((y-1 >= 0) && (x >= 0) && (y-1 < borderImage.length) && (x < borderImage[0].length) && (borderImage[y - 1][x] == borderImage[y][x]))
       {
         dir[0] = 0;
         dir[1] = -1;
       }
-      if(borderImage[y][x - 1] == borderImage[y][x])
+      if((y >= 0) && (x-1 >= 0) && (y < borderImage.length) && (x-1 < borderImage[0].length) && (borderImage[y][x - 1] == borderImage[y][x]))
       {
         dir[0] = -1;
         dir[1] = 0;
       }
-      if(borderImage[y + 1][x + 1] == borderImage[y][x])
+      if((y+1 >= 0) && (x+1 >= 0) && (y+1 < borderImage.length) && (x+1 < borderImage[0].length) && (borderImage[y + 1][x + 1] == borderImage[y][x]))
       {
         dir[0] = 1;
         dir[1] = 1;
       }
-      if(borderImage[y - 1][x - 1] == borderImage[y][x])
+      if((y-1 >= 0) && (x-1 >= 0) && (y-1 < borderImage.length) && (x-1 < borderImage[0].length) && (borderImage[y - 1][x - 1] == borderImage[y][x]))
       {
         dir[0] = -1;
         dir[1] = -1;
@@ -325,7 +326,8 @@ public class Filters {
     {
       for(int j=0;j<3;j++)
       {
-        if(((i != 1) || (j != 1)) && ((i != 1 - dir[1]) || (j != 1 - dir[0])) && (image[startPoint[1]+i][startPoint[0]+j] == surfaceVal)) 
+        //if(((i != 1) || (j != 1)) && ((i != 1 - dir[1]) || (j != 1 - dir[0])) && (image[startPoint[1]+i][startPoint[0]+j] == surfaceVal)) 
+        if((startPoint[1]+i >= 0) && (startPoint[0]+j >= 0) && (startPoint[1]+i < image.length) && (startPoint[0]+j < image[0].length) && ((i != 1) || (j != 1)) && ((i != 1 - dir[1]) || (j != 1 - dir[0])) && (image[startPoint[1]+i][startPoint[0]+j] != 0) && (image[startPoint[1]+i][startPoint[0]+j] < 820)) 
         {
           neighs[count][0] = startPoint[0]+j;
           neighs[count][1] = startPoint[1]+i;
