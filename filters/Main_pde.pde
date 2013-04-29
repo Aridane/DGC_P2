@@ -6,8 +6,8 @@ void setup(){
   output = createWriter("newMap.txt");
   Filters filter = new Filters(60,80,"C:\\kin.txt");
   filter.deleteSparePointsByDepth();
-  int [][] mat = filter.getReducedMatrix();
-  for (int i=0;i<60;i++){
+    int [][] mat = filter.getReducedMatrix();
+    for (int i=0;i<60;i++){
     for (int j=0;j<80;j++){
       output.print(mat[i][j] + " ");
     }
@@ -15,31 +15,28 @@ void setup(){
   }
   output.flush();
   output.close();
-  println("........................");
-  
-  int[][] borderPoint = {{21, 59}};
-  int[][][] res = new int[1][4800][2];
-  int[] numberRes = new int[1];
-  filter.sortBorderSurfaces(res,numberRes,borderPoint,1,mat);
-  println("number " + numberRes[0]);
-  for(int i=0;i<numberRes[0];i++)
-  {
-    println(res[0][i][0] + " " + res[0][i][1]);
-  }
-  int[][][] vertexes = new int[1][numberRes[0]][2];
-  int[] vertexesCount = new int[1];
-  filter.deleteUselessVertexes(vertexes,vertexesCount,res,1,numberRes);
+  int[][][] sortedBorders = new int[20][4800][2];
+  filter.getSortedBorders(sortedBorders);
+
+
+  int[][][] vertexes = new int[filter.nBorders][filter.numberOfPointsPerBorder[0]][2];
+  int[] vertexesCount = new int[filter.nBorders];
+  filter.deleteUselessVertexes(vertexes,vertexesCount,sortedBorders,filter.nBorders,filter.numberOfPointsPerBorder);
   println("vertices");
-  for(int i=0;i<vertexesCount[0];i++)
+  for(int k=0;k<filter.nBorders;k++)
   {
-    println(vertexes[0][i][0] + " " + vertexes[0][i][1]);
-    if(i<vertexesCount[0]-1)
+    println("surface");
+    for(int i=0;i<vertexesCount[k];i++)
     {
-      line(vertexes[0][i][0],vertexes[0][i][1],vertexes[0][i+1][0],vertexes[0][i+1][1]);
-    }
-    else
-    {
-      line(vertexes[0][i][0],vertexes[0][i][1],vertexes[0][0][0],vertexes[0][0][1]);
+      println(vertexes[k][i][0] + " " + vertexes[k][i][1]);
+      if(i<vertexesCount[k]-1)
+      {
+        line(vertexes[k][i][0],vertexes[k][i][1],vertexes[k][i+1][0],vertexes[k][i+1][1]);
+      }
+      else
+      {
+        line(vertexes[k][i][0],vertexes[k][i][1],vertexes[k][0][0],vertexes[k][0][1]);
+      }
     }
   }
 }

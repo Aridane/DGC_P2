@@ -5,11 +5,17 @@ public class Filters {
   private String pathToRawFile ="";
   private int [][] rawData;
   private int [][] reducedData;
+  //x,y,profundidad
+  private int [][] initialBorderPoints;
+  private int [] numberOfPointsPerBorder;
+  private int nBorders = 0;
   private BufferedReader rawReader;
   private int maxDepth = 0;
   private int limitThres = 500;
   private int neighbourThres = 9;
   private int neighbourDepthThres = 50;
+  PrintWriter debug= createWriter("debug.txt");
+  
 
 
   Filters(int dimX, int dimY, String path) {
@@ -55,6 +61,13 @@ public class Filters {
   boolean inRange(int actualDepth, int x, int y) {
     return (((abs(rawData[x][y] - actualDepth)) < neighbourDepthThres));
   }
+  
+  
+  boolean inRangeInReduced(int actualDepth, int x, int y)
+  {
+    return (((abs(reducedData[x][y] - actualDepth)) < neighbourDepthThres));
+  }
+  
   /*Comprueba la cantidad de vecinos de un punto dentro del rango*/
   boolean checkNeighbours(int actualDepth, int x, int y) {
     int counter = 0;
@@ -202,92 +215,153 @@ public class Filters {
   }
   
   
-  //@salida | sortedBorderPoints -> vector que contiene vectores de puntos ordenados para cada superficie (cada punto son dos cordeenadas, por eso 3dim)
-  //@salida | nimberBorderPoints -> vector del numero de puntos del borde ordenados para cada superficie
-  //@param | borderPoints -> puntos iniciales de cada superficie
-  //@param | numero de superficies
-  //@param | imagen simplificada con los bordes solamente
-  void sortBorderSurfaces(int[][][] sortedBorderPoints,int[] numberBorderPoints,int[][] borderPoints,int nSurface,int[][] borderImage)
+  //Lo modifique para que directamente obtuviera los bordes ordenados de todas las superficies
+  void getSortedBorders(int[][][] borderPoints)
+  {
+    //Recorremos la matriz reducida, cuando encontramos un elemento !=0 obtenemos el borde al que pertenece y almacenamos ese borde.
+    //recorremos el resto de puntos hasta que encontramos uno que no pertenece a un borde recorrido y lo usamos como nuevo punto inicial.
+    initialBorderPoints = new int[20][2];
+    int actualDepth = 0;
+    numberOfPointsPerBorder = new int [20];
+    int [] nPoints = new int[1];
+    for (int i=0;i<frameDimensions[0];i++)
+    {
+      for (int j=0;j<frameDimensions[1];j++)
+      {
+        actualDepth = reducedData[i][j];
+        int [] point = {j,i};
+        if ((actualDepth != 0) && (!isPartOf(point, borderPoints,actualDepth)))
+        {          
+          initialBorderPoints[nBorders] = point;
+          
+          numberOfPointsPerBorder[nBorders] = sortBorder(borderPoints[nBorders],point,actualDepth);
+          for(int k=0;k<numberOfPointsPerBorder[nBorders];k++) println(borderPoints[nBorders][k][0] + " " + borderPoints[nBorders][k][1]);
+          nBorders++;
+        }
+      }
+    }
+    println("nBorders = "+ nBorders +" nPoints Border 1 = "+ numberOfPointsPerBorder[0]);
+  }
+  
+
+  boolean isPartOf(int [] point, int [][][] pointList,int depthVal) {
+    for (int i=0;i<nBorders;i++){
+      for (int j=0;j<numberOfPointsPerBorder[i];j++){
+        if (isNeighAndInRange(pointList[i][j],point,depthVal)) return true;
+      }
+    }
+    return false;
+  }
+  
+  boolean isNeighAndInRange(int[] p1,int[] p2,int depthVal)
+  {
+    int[] startPoint = new int[2];
+    startPoint[0] = p2[0]-1;
+    startPoint[1] = p2[1]-1;
+    for(int i=0;i<3;i++)
+    {
+      for(int j=0;j<3;j++)
+      {
+        if((startPoint[0]+j >= 0) && (startPoint[1]+i >= 0) && (startPoint[0]+j < reducedData[0].length) && (startPoint[1]+i < reducedData.length) && (p1[0] == startPoint[0]+j) && (p1[1] == startPoint[1]+i) && inRangeInReduced(depthVal,startPoint[1]+i,startPoint[0]+j)) return true;
+      }
+    }
+    return false;
+  }
+  
+  //@salida | sortedBorderPoints -> vector de puntos del borde ordenados
+  //@return | numero de puntos del borde
+  //@param | initialBorderPoint -> punto inicial
+  //@param | depthValue -> valor de profundidad del punto inicial
+  int sortBorder(int[][] sortedBorderPoints,int[] initialBorderPoint,int depthValue)
   {
     int[] dir = new int[2];;
     int[] actualPoint = new int[2];
     int[] nextPoint = new int[2];
     int[] nextDir = new int[2];
-    int countPerSurface;
+    int count = 1;
 
-    //Para cada superficie
-    for(int i=0;i<nSurface;i++)
+    //Obtener la direccion inicial y el punto actual
+    getInitialDir(dir,initialBorderPoint[0],initialBorderPoint[1],depthValue);
+    println("initial dir = " + dir[0] + " " + dir[1]);
+    actualPoint[0] = initialBorderPoint[0] + dir[0];
+    actualPoint[1] = initialBorderPoint[1] + dir[1];
+    println("border Point = " + initialBorderPoint[0] + " " +  initialBorderPoint[1]);
+    println("actual Point = " + actualPoint[0] + " " + actualPoint[1]);
+    sortedBorderPoints[0][0] = actualPoint[0];
+    sortedBorderPoints[0][1] = actualPoint[1];
+    //Mientras el punto actual sea distinto del de partida (dado por borderPoints)
+    while((actualPoint[0] != initialBorderPoint[0]) || (actualPoint[1] != initialBorderPoint[1]))
     {
-      countPerSurface = 1;
-      //Obtener la direccion inicial y el punto actual
-      getInitialDir(dir,borderPoints[i][0],borderPoints[i][1],borderImage);
-      //println("initial dir = " + dir[0] + " " + dir[1]);
-      actualPoint[0] = borderPoints[i][0] + dir[0];
-      actualPoint[1] = borderPoints[i][1] + dir[1];
-      /*println("border Point = " + borderPoints[i][0] + " " +  borderPoints[i][1]);
-      println("actual Point = " + actualPoint[0] + " " + actualPoint[1]);*/
-      sortedBorderPoints[i][0][0] = actualPoint[0];
-      sortedBorderPoints[i][0][1] = actualPoint[1];
-      //Mientras el punto actual sea distinto del de partida (dado por borderPoints)
-      while((actualPoint[0] != borderPoints[i][0]) || (actualPoint[1] != borderPoints[i][1]))
-      {
-        //getActualPointAndNextDir(nextPoint,nextDir,actualPoint,dir,borderImage,borderImage[borderPoints[i][1]][borderPoints[i][0]]);
-        getActualPointAndNextDir(nextPoint,nextDir,actualPoint,dir,borderImage,0);
-        actualPoint[0] = nextPoint[0];
-        actualPoint[1] = nextPoint[1];
-        dir[0] = nextDir[0];
-        dir[1] = nextDir[1];
-        /*println("actual Point = " + actualPoint[0] + " " + actualPoint[1]);
-        println("actual Dir = " + dir[0] + " " + dir[1]);*/
-        sortedBorderPoints[i][countPerSurface][0] = actualPoint[0];
-        sortedBorderPoints[i][countPerSurface][1] = actualPoint[1];        
-        countPerSurface++;
-      }
+      getActualPointAndNextDir(nextPoint,nextDir,actualPoint,dir,depthValue);
 
-      numberBorderPoints[i] = countPerSurface;
+      
+      actualPoint[0] = nextPoint[0];
+      actualPoint[1] = nextPoint[1];
+      dir[0] = nextDir[0];
+      dir[1] = nextDir[1];
+      if((actualPoint[0] == 35) && (actualPoint[1] == 0))
+      {
+        println("initial Point = " + initialBorderPoint[0] + " " + initialBorderPoint[1]);
+        println("actual Point = " + actualPoint[0] + " " + actualPoint[1]);
+        println("actual Dir = " + dir[0] + " " + dir[1]);
+        println("next Point = " + nextPoint[0] + " " + nextPoint[1]);
+        println("next Dir = " + nextDir[0] + " " + nextDir[1]);
+      }
+      sortedBorderPoints[count][0] = actualPoint[0];
+      sortedBorderPoints[count][1] = actualPoint[1];        
+      count++;
     }
+    return count;
   }
 
 
 
-  void getInitialDir(int[] dir,int x,int y,int[][] borderImage)
+  void getInitialDir(int[] dir,int x,int y,int depthVal)
   {
-      if((y+1 >= 0) && (x >= 0) && (y+1 < borderImage.length) && (y+1 < borderImage[0].length) && (borderImage[y + 1][x] == borderImage[y][x]))
+      println("xy " + x + " " + y);
+      if((y+1 >= 0) && (x >= 0) && (y+1 < reducedData.length) && (x < reducedData[0].length) && (inRange(depthVal,y+1,x)))
       {
         dir[0] = 0;
         dir[1] = 1;
+        return;
       }
-      if((y >= 0) && (x+1 >= 0) && (y < borderImage.length) && (x+1 < borderImage[0].length) && (borderImage[y][x + 1] == borderImage[y][x]))
+      if((y >= 0) && (x+1 >= 0) && (y < reducedData.length) && (x+1 < reducedData[0].length) && (inRange(depthVal,y,x+1)))
       {
         dir[0] = 1;
         dir[1] = 0;
+        return;
       }
-      if((y+1 >= 0) && (x-1 >= 0) && (y+1 < borderImage.length) && (x-1 < borderImage[0].length) && (borderImage[y + 1][x - 1] == borderImage[y][x]))
+      if((y+1 >= 0) && (x-1 >= 0) && (y+1 < reducedData.length) && (x-1 < reducedData[0].length) && (inRange(depthVal,y+1,x-1)))
       {
         dir[0] = -1;
         dir[1] = 1;
+        return;
       }
-      if((y-1 >= 0) && (x+1 >= 0) && (y-1 < borderImage.length) && (x+1 < borderImage[0].length) && (borderImage[y - 1][x + 1] == borderImage[y][x]))
+      if((y-1 >= 0) && (x+1 >= 0) && (y-1 < reducedData.length) && (x+1 < reducedData[0].length) && (inRange(depthVal,y-1,x+1)))
       {
         dir[0] = 1;
         dir[1] = -1;
+        return;
       }
-      if((y-1 >= 0) && (x >= 0) && (y-1 < borderImage.length) && (x < borderImage[0].length) && (borderImage[y - 1][x] == borderImage[y][x]))
+      if((y-1 >= 0) && (x >= 0) && (y-1 < reducedData.length) && (x < reducedData[0].length) && (inRange(depthVal,y-1,x)))
       {
         dir[0] = 0;
         dir[1] = -1;
+        return;
       }
-      if((y >= 0) && (x-1 >= 0) && (y < borderImage.length) && (x-1 < borderImage[0].length) && (borderImage[y][x - 1] == borderImage[y][x]))
+      if((y >= 0) && (x-1 >= 0) && (y < reducedData.length) && (x-1 < reducedData[0].length) && (inRange(depthVal,y,x-1)))
       {
         dir[0] = -1;
         dir[1] = 0;
+        return;
       }
-      if((y+1 >= 0) && (x+1 >= 0) && (y+1 < borderImage.length) && (x+1 < borderImage[0].length) && (borderImage[y + 1][x + 1] == borderImage[y][x]))
+      if((y+1 >= 0) && (x+1 >= 0) && (y+1 < reducedData.length) && (x+1 < reducedData[0].length) && (inRange(depthVal,y+1,x+1)))
       {
         dir[0] = 1;
         dir[1] = 1;
+        return;
       }
-      if((y-1 >= 0) && (x-1 >= 0) && (y-1 < borderImage.length) && (x-1 < borderImage[0].length) && (borderImage[y - 1][x - 1] == borderImage[y][x]))
+      if((y-1 >= 0) && (x-1 >= 0) && (y-1 < reducedData.length) && (x-1 < reducedData[0].length) && (inRange(depthVal,y-1,x-1)))
       {
         dir[0] = -1;
         dir[1] = -1;
@@ -296,39 +370,59 @@ public class Filters {
 
 
 
-  void getActualPointAndNextDir(int[] nextPoint,int[] nextDir,int[] actualPoint,int[] actualDir,int[][] image, int surfaceVal)
+  void getActualPointAndNextDir(int[] nextPoint,int[] nextDir,int[] actualPoint,int[] actualDir, int depthVal)
   {
     int[][] neighs = new int[8][2];
     int neighNumber;
-    neighNumber = getNeighs(neighs,actualPoint,actualDir,image,surfaceVal);
+    neighNumber = getNeighs(neighs,actualPoint,actualDir,depthVal);
+    if((actualPoint[0] == 0) && (actualPoint[1] == 36))
+    {
+      System.out.println("ojhooj");
+      for(int i=0;i<neighNumber;i++)
+      {
+        System.out.println("neigh = " + neighs[i][0] + " " + neighs[i][1]);
+      }
+    }
     /*println("neighs");
     for(int i=0;i<neighNumber;i++)
     {
       print(neighs[i][0] + " " + neighs[i][1] + " ");
     }
     println(" ");*/
+
     getBetterNeigh(nextPoint,actualPoint,actualDir,neighs,neighNumber);
     getNextDir(nextDir,nextPoint,actualPoint);
   }
 
 
 
-  int getNeighs(int[][] neighs,int[] point,int[] dir,int[][] image,int surfaceVal)
+  int getNeighs(int[][] neighs,int[] point,int[] dir,int depthVal)
   {
     int[] startPoint = new int[2];
     int count = 0;
     startPoint[0] = point[0]-1;
     startPoint[1] = point[1]-1;
-    /*println("Point = " + point[0] + " " + point[1]);
+    if((point[0] == 35)&&(point[1] == 1))
+    {
+    println("Point = " + point[0] + " " + point[1]);
     println("start Point = " + startPoint[0] + " " + startPoint[1]);
-    println("dir = " + dir[0] + " " + dir[1]);*/
+    println("dir = " + dir[0] + " " + dir[1]);
+    println("depthval " + depthVal);
+    }
+     
     for(int i=0;i<3;i++)
     {
       for(int j=0;j<3;j++)
       {
-        //if(((i != 1) || (j != 1)) && ((i != 1 - dir[1]) || (j != 1 - dir[0])) && (image[startPoint[1]+i][startPoint[0]+j] == surfaceVal)) 
-        if((startPoint[1]+i >= 0) && (startPoint[0]+j >= 0) && (startPoint[1]+i < image.length) && (startPoint[0]+j < image[0].length) && ((i != 1) || (j != 1)) && ((i != 1 - dir[1]) || (j != 1 - dir[0])) && (image[startPoint[1]+i][startPoint[0]+j] != 0) && (image[startPoint[1]+i][startPoint[0]+j] < 820)) 
+
+        if((startPoint[1]+i >= 0) && (startPoint[0]+j >= 0) && (startPoint[1]+i < reducedData.length) && (startPoint[0]+j < reducedData[0].length) && ((i != 1) || (j != 1)) && ((i != 1 - dir[1]) || (j != 1 - dir[0])) && (inRangeInReduced(depthVal,startPoint[1]+i,startPoint[0]+j))) 
         {
+          if((point[0] == 35)&&(point[1] == 1))
+          {
+                println("coorde = " + (startPoint[0]+j) + " " + (startPoint[1]+i));
+    println("INRANGE?? = " + reducedData[startPoint[1]+i][startPoint[0]+j]);
+            println("entro");
+          }
           neighs[count][0] = startPoint[0]+j;
           neighs[count][1] = startPoint[1]+i;
           count++;
@@ -368,7 +462,7 @@ public class Filters {
     float h2 = evalNeigh(n2,actualPoint,dir);
    /* println("h1 = " + h1);
     println("h2 = " + h2);*/
-    if(h1 < h2) return true;
+    if(h1 <= h2) return true;
     else return false;
   }
 
