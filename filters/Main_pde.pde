@@ -4,7 +4,7 @@ void setup(){
   background(102);
   stroke(255,0,15);
   output = createWriter("newMap.txt");
-  Filters filter = new Filters(60,80,"C:\\kin.txt");
+  Filters filter = new Filters(60,80,"C:\\old_2.txt");
   filter.deleteSparePointsByDepth();
     int [][] mat = filter.getReducedMatrix();
     for (int i=0;i<60;i++){
