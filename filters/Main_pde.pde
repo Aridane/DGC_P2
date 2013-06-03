@@ -32,12 +32,12 @@ void setup(){
       println(vertexes[k][i][0] + " " + vertexes[k][i][1]);
       if(i<vertexesCount[k]-1)
       {
-        //line(vertexes[k][i][0],vertexes[k][i][1],vertexes[k][i+1][0],vertexes[k][i+1][1]);
+        line(vertexes[k][i][0],vertexes[k][i][1],vertexes[k][i+1][0],vertexes[k][i+1][1]);
 
       }
       else
       {
-        //line(vertexes[k][i][0],vertexes[k][i][1],vertexes[k][0][0],vertexes[k][0][1]);
+        line(vertexes[k][i][0],vertexes[k][i][1],vertexes[k][0][0],vertexes[k][0][1]);
       }
     }
   }
