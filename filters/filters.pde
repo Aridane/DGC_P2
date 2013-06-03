@@ -11,7 +11,7 @@ public class Filters {
   private int nBorders = 0;
   private BufferedReader rawReader;
   private int maxDepth = 0;
-  private int limitThres = 500;
+  private int limitThres = 0;
   private int neighbourThres = 9;
   private int neighbourDepthThres = 50;
   PrintWriter debug= createWriter("debug.txt");
@@ -669,5 +669,4 @@ public class Filters {
     }
     return 0;
   }
-  
 }
