@@ -669,5 +669,4 @@ public class Filters {
     }
     return 0;
   }
-  
 }
