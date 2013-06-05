@@ -1,21 +1,22 @@
 PrintWriter output;
+
 void setup(){
-  size(80, 60);
+  size(320, 240);
   background(102);
   stroke(255,0,15);
-  output = createWriter("newMap.txt");
-  Filters filter = new Filters(60,80,"C:\\old_2.txt");
+  output = createWriter("/home/aridane/ULPGC/DGC/DGC_P2/newMap.txt");
+  Filters filter = new Filters(320,240,"/home/aridane/ULPGC/DGC/DGC_P2/guit_front.txt");
   filter.deleteSparePointsByDepth();
     int [][] mat = filter.getReducedMatrix();
-    for (int i=0;i<60;i++){
-    for (int j=0;j<80;j++){
+    for (int i=0;i<240;i++){
+    for (int j=0;j<320;j++){
       output.print(mat[i][j] + " ");
     }
     output.println("");
   }
   output.flush();
   output.close();
-  int[][][] sortedBorders = new int[20][4800][2];
+  int[][][] sortedBorders = new int[20][240*320][2];
   filter.getSortedBorders(sortedBorders);
 
 
