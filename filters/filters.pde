@@ -11,9 +11,9 @@ public class Filters {
   private int nBorders = 0;
   private BufferedReader rawReader;
   private int maxDepth = 0;
-  private int limitThres = 0;
+  private int limitThres = 390;
   private int neighbourThres = 9;
-  private int neighbourDepthThres = 50;
+  private int neighbourDepthThres = 40;
   PrintWriter debug= createWriter("debug.txt");
   
 
@@ -22,8 +22,11 @@ public class Filters {
     frameDimensions[0] = dimX;
     frameDimensions[1] = dimY;
     pathToRawFile = path;
-    rawData = new int[dimX][dimY];
-    reducedData = new int[dimX][dimY];
+    rawData = new int[dimY][dimX];
+    reducedData = new int[dimY][dimX];
+    for (int i=0;i<dimY;i++){
+      for(int j=0;j<dimX;j++) reducedData[i][j] = 0;
+    }
     rawReader = createReader(path);
     readRawFile();
   }
@@ -32,7 +35,7 @@ public class Filters {
     String line;
     String [] lineStringValues;
 
-    for (int i=0;i<frameDimensions[0];i++) {
+    for (int i=0;i<frameDimensions[1];i++) {
       try {
         line = rawReader.readLine();
       } 
@@ -41,7 +44,8 @@ public class Filters {
         line = null;
       }
       lineStringValues = line.split(" ");
-      for (int j=0;j<lineStringValues.length-1;j++) {
+      println("Y = "+i+"Split Length"+lineStringValues.length);
+      for (int j=0;j<frameDimensions[0];j++) {
           rawData[i][j] = Integer.parseInt(lineStringValues[j]);
         if (rawData[i][j] > maxDepth) maxDepth = rawData[i][j];
       }
@@ -69,126 +73,131 @@ public class Filters {
   }
   
   /*Comprueba la cantidad de vecinos de un punto dentro del rango*/
-  boolean checkNeighbours(int actualDepth, int x, int y) {
+  /*Si un piunto tiene un numero de vecinos menor que el limite establecido se devuelve true*/
+  boolean checkNeighbours(int actualDepth, int i, int j) {
     int counter = 0;
     int oldNeighbourThres = neighbourThres;
-    if ((x == 0)&&(y == 0)) {
+    if ((i == 0)&&(j == 0)) {
       println("C1");
-      neighbourThres = 3;
-      for (int i=0;i<2;i++) {
-        for (int j=0;j<2;j++) {
-          if (inRange(actualDepth, x+i, y+j)){ counter++;}
+      neighbourThres = 5;
+      for (int ic=0;ic<2;ic++) {
+        for (int jc=0;jc<2;jc++) {
+          if (inRange(actualDepth, i+ic, j+jc)){ counter++;}
         }
       }
       if (counter < neighbourThres){
          neighbourThres = oldNeighbourThres;
          return true;
       }
-      
+      return false;
     }
-    else if ((x == 0)&&(y == frameDimensions[1]-1)) {
+    else if ((i == 0)&&(j == frameDimensions[0]-1)) {
       println("C2");
-      neighbourThres = 3;
-      for (int i=0;i<2;i++) {
-        for (int j=-1;j<1;j++) {
-          if (inRange(actualDepth, x+i, y+j)){ counter++;}
+      neighbourThres = 5;
+      for (int ic=0;ic<2;ic++) {
+        for (int jc=-1;jc<1;jc++) {
+          if (inRange(actualDepth, i+ic, j+jc)){ counter++;}
         }
       }
       if (counter < neighbourThres){
          neighbourThres = oldNeighbourThres;
          return true;
       }
+      return false;
     }
-    else if ((x == frameDimensions[0]-1)&&(y == 0)) {
+    else if ((i == frameDimensions[1]-1)&&(j == 0)) {
       println("C3");
-      neighbourThres = 3;
-      for (int i=-1;i<1;i++) {
-        for (int j=0;j<2;j++) {
-          if (inRange(actualDepth, x+i, y+j)){ counter++;}
+      neighbourThres = 5;
+      for (int ic=-1;ic<1;ic++) {
+        for (int jc=0;jc<2;jc++) {
+          if (inRange(actualDepth, i+ic, j+jc)){ counter++;}
         }
       }
       if (counter < neighbourThres){
          neighbourThres = oldNeighbourThres;
          return true;
       }
-
+      return false;
     }
-    else if ((x == frameDimensions[0]-1)&&(y == frameDimensions[1]-1)) {
+    else if ((i == frameDimensions[1]-1)&&(j == frameDimensions[0]-1)) {
      println("C4");
-      neighbourThres = 3;
-      for (int i=-1;i<1;i++) {
-        for (int j=-1;j<1;j++) {
-          if (inRange(actualDepth, x+i, y+j)){ counter++;}
+      neighbourThres = 5;
+      for (int ic=-1;ic<1;ic++) {
+        for (int jc=-1;jc<1;jc++) {
+          if (inRange(actualDepth, i+ic, j+jc)){ counter++;}
         }
       }
       if (counter < neighbourThres){
          neighbourThres = oldNeighbourThres;
          return true;
       }
+      return false;
 
     }
-    else if (x == 0) {
+    else if (i == 0) {
       println("C5");
-      neighbourThres = 9;
+      neighbourThres = 7;
       
-      for (int i=0;i<2;i++) {
-        for (int j=-1;j<2;j++) {
-          if (inRange(actualDepth, x+i, y+j)){ counter++;}
+      for (int ic=0;ic<2;ic++) {
+        for (int jc=-1;jc<2;jc++) {
+          if (inRange(actualDepth, i+ic, j+jc)){ counter++;}
         }
       }
-      println("nbTH = "+neighbourThres+"counter = "+counter+"x = "+ x + " y = "+y);
+      println("nbTH = "+neighbourThres+"counter = "+counter+"i = "+ i + " j = "+j);
       
       if (counter < neighbourThres){
          neighbourThres = oldNeighbourThres;
          return true;
       }
+      return false;
     }
-    else if (y == 0) {
+    else if (j == 0) {
       println("C6");
       neighbourThres = 7;
-      for (int i=-1;i<2;i++) {
-        for (int j=0;j<2;j++) {
-          if (inRange(actualDepth, x+i, y+j)){ counter++;}
+      for (int ic=-1;ic<2;ic++) {
+        for (int jc=0;jc<2;jc++) {
+          if (inRange(actualDepth, i+ic, j+jc)){ counter++;}
         }
       }
       if (counter < neighbourThres){
          neighbourThres = oldNeighbourThres;
          return true;
       }
-
+      return false;
     }
-    else if (x == frameDimensions[0]-1) {
+    else if (i == frameDimensions[1]-1) {
       println("C7");
       neighbourThres = 7;
-      for (int i=-1;i<1;i++) {
-        for (int j=-1;j<2;j++) {
-          if (inRange(actualDepth, x+i, y+j)){ counter++;}
+      for (int ic=-1;ic<1;ic++) {
+        for (int jc=-1;jc<2;jc++) {
+          if (inRange(actualDepth, i+ic, j+jc)){ counter++;}
         }
       }
       if (counter < neighbourThres){
          neighbourThres = oldNeighbourThres;
          return true;
       }
-
+      return false;
     }
-    else if (y == frameDimensions[1]-1) {
+    else if (j == frameDimensions[0]-1) {
       println("C8");
       neighbourThres = 7;
-      for (int i=-1;i<2;i++) {
-        for (int j=-1;j<1;j++) {
-          if (inRange(actualDepth, x+i, y+j)){ counter++;}
+      for (int ic=-1;ic<2;ic++) {
+        for (int jc=-1;jc<1;jc++) {
+          if (inRange(actualDepth, i+ic, j+jc)){ counter++;}
         }
       }
       if (counter < neighbourThres){
          neighbourThres = oldNeighbourThres;
          return true;
       }
+      return false;
 
     }
     else {
-      for (int i=-1;i<2;i++) {
-        for (int j=-1;j<2;j++) {
-          if (inRange(actualDepth, x+i, y+j)){ counter++;}
+      for (int ic=-1;ic<2;ic++) {
+        for (int jc=-1;jc<2;jc++) {
+          if (inRange(actualDepth, i+ic, j+jc)){ counter++;}
         }
       }
       if (counter < neighbourThres) return true;
@@ -199,8 +208,8 @@ public class Filters {
   int [][] deleteSparePointsByDepth() {
     int actualDepth = 0;
     int actualDepthSector = 0;
-    for (int i=0;i<frameDimensions[0];i++) {
-      for (int j=0;j<frameDimensions[1];j++) {
+    for (int i=0;i<frameDimensions[1];i++) {
+      for (int j=0;j<frameDimensions[0];j++) {
         actualDepth = rawData[i][j];
         if (actualDepth > (maxDepth - limitThres)) {
           reducedData[i][j] = 0;
@@ -224,9 +233,9 @@ public class Filters {
     int actualDepth = 0;
     numberOfPointsPerBorder = new int [20];
     int [] nPoints = new int[1];
-    for (int i=0;i<frameDimensions[0];i++)
+    for (int i=0;i<frameDimensions[1];i++)
     {
-      for (int j=0;j<frameDimensions[1];j++)
+      for (int j=0;j<frameDimensions[0];j++)
       {
         actualDepth = reducedData[i][j];
         int [] point = {j,i};
