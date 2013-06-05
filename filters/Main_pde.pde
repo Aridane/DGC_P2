@@ -4,8 +4,8 @@ void setup(){
   size(320, 240);
   background(102);
   stroke(255,0,15);
-  output = createWriter("/home/aridane/ULPGC/DGC/DGC_P2/newMap.txt");
-  Filters filter = new Filters(320,240,"/home/aridane/ULPGC/DGC/DGC_P2/guit_front.txt");
+  output = createWriter("newMap.txt");
+  Filters filter = new Filters(320,240,"guit_front.txt");
   filter.deleteSparePointsByDepth();
     int [][] mat = filter.getReducedMatrix();
     for (int i=0;i<240;i++){
