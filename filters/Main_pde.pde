@@ -37,7 +37,7 @@ void setup(){
       }
       else
       {
-        line(vertexes[k][i][0],vertexes[k][i][1],vertexes[k][0][0],vertexes[k][0][1]);
+         line(vertexes[k][i][0],vertexes[k][i][1],vertexes[k][0][0],vertexes[k][0][1]);
       }
     }
   }
