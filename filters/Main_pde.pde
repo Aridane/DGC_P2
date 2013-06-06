@@ -1,12 +1,12 @@
-int alt = 240;
-int anch = 360;
+int alt = 60;
+int anch = 80;
 PrintWriter output;
 void setup(){
   size(anch, alt);
   background(102);
   stroke(255,0,15);
   output = createWriter("newMap.txt");
-  Filters filter = new Filters(alt,anch,"C:\\guit_front.txt");
+  Filters filter = new Filters(alt,anch,"C:\\old_2.txt");
   filter.deleteSparePointsByDepth();
     int [][] mat = filter.getReducedMatrix();
     for (int i=0;i<alt;i++){
