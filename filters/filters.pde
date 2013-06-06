@@ -11,6 +11,7 @@ public class Filters
   private String pathToRawFile ="";
   private int [][] rawData;
   private int [][] reducedData;
+  
   //x,y,profundidad
   private int [][] initialBorderPoints;
   private int [] numberOfPointsPerBorder;
