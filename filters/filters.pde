@@ -2,6 +2,8 @@ import java.lang.IndexOutOfBoundsException;
 public class Filters
 {
 
+  
+  
   int alto;
   int ancho;
   
