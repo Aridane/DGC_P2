@@ -1,42 +1,44 @@
 PrintWriter output;
-
+int alt = 240;
+int anch = 320;
 void setup(){
   size(320, 240);
   background(102);
   stroke(255,0,15);
   output = createWriter("newMap.txt");
-  Filters filter = new Filters(320,240,"C:\\guit_front.txt");
+  Filters filter = new Filters(anch,alt,"C:\\guit_front.txt");
   filter.deleteSparePointsByDepth();
     int [][] mat = filter.getReducedMatrix();
-    for (int i=0;i<240;i++){
-    for (int j=0;j<320;j++){
+    for (int i=0;i<alt;i++){
+    for (int j=0;j<anch;j++){
       output.print(mat[i][j] + " ");
     }
     output.println("");
   }
   output.flush();
   output.close();
-  int[][][] sortedBorders = new int[20][240*320][2];
-  filter.getSortedBorders(sortedBorders);
+  filter.reducedData[0][171] = 0;
+  filter.getSortedBorders();
 
+ 
 
-  int[][][] vertexes = new int[filter.nBorders][filter.numberOfPointsPerBorder[0]][2];
-  int[] vertexesCount = new int[filter.nBorders];
-  filter.deleteUselessVertexes(vertexes,vertexesCount,sortedBorders,filter.nBorders,filter.numberOfPointsPerBorder);
+  filter.deleteUselessVertexes();
   println("vertices");
   for(int k=0;k<filter.nBorders;k++)
   {
     println("surface");
-    for(int i=0;i<vertexesCount[k];i++)
+    for(int i=0;i<filter.vertexesCount[k];i++)
     {
-      println(vertexes[k][i][0] + " " + vertexes[k][i][1]);
-      if(i<vertexesCount[k]-1)
+      point(filter.vertexes[k][i][0],filter.vertexes[k][i][1]);
+      println(filter.vertexes[k][i][0] + " " + filter.vertexes[k][i][1]);
+      if(i<filter.vertexesCount[k]-1)
       {
-        line(vertexes[k][i][0],vertexes[k][i][1],vertexes[k][i+1][0],vertexes[k][i+1][1]);
+        line(filter.vertexes[k][i][0],filter.vertexes[k][i][1],filter.vertexes[k][i+1][0],filter.vertexes[k][i+1][1]);
+
       }
       else
       {
-        line(vertexes[k][i][0],vertexes[k][i][1],vertexes[k][0][0],vertexes[k][0][1]);
+         line(filter.vertexes[k][i][0],filter.vertexes[k][i][1],filter.vertexes[k][0][0],filter.vertexes[k][0][1]);
       }
     }
   }
