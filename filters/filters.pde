@@ -20,10 +20,10 @@ public class Filters {
 
 
 
-  Filters(int dimX, int dimY, String path, int pview) {
+  Filters(int dimX, int dimY, String path/*, int pview*/) {
     frameDimensions[0] = dimX;
     frameDimensions[1] = dimY;
-    view = pview;
+   // view = pview;
     pathToRawFile = path;
     rawData = new int[dimY][dimX];
     reducedData = new int[dimY][dimX];
@@ -699,9 +699,9 @@ public class Filters {
     }
     return 0;
   }
-}
 
-//Todos los puntos se convierten a un sistema de referencia con respecto al centroide del objeto
+
+/*//Todos los puntos se convierten a un sistema de referencia con respecto al centroide del objeto
 void changeVertexReferenceSystem(int [] centroid) {
   for (int k=0;k<nBorders;k++) {
     for (int i=0;i<vertexesCount[k];i++) {
@@ -709,5 +709,6 @@ void changeVertexReferenceSystem(int [] centroid) {
     
     }
   }
+}*/
 }
 
