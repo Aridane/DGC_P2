@@ -1,6 +1,10 @@
 import java.lang.IndexOutOfBoundsException;
-public class Filters {
+public class Filters
+{
 
+  int alto;
+  int ancho;
+  
   private int [] frameDimensions = new int[2];
   private String pathToRawFile ="";
   private int [][] rawData;
@@ -16,9 +20,17 @@ public class Filters {
   private int neighbourDepthThres = 50;
   PrintWriter debug= createWriter("debug.txt");
   
+  int[][][] vertexes;
+  int[] vertexesCount;
+  int[][][] borderPoints;
+  int[][][] sortedBorders;
+  
 
 
-  Filters(int dimX, int dimY, String path) {
+  Filters(int dimX, int dimY, String path) 
+  {
+    ancho = dimY;
+    alto = dimX;
     frameDimensions[0] = dimX;
     frameDimensions[1] = dimY;
     pathToRawFile = path;
@@ -26,6 +38,8 @@ public class Filters {
     reducedData = new int[dimX][dimY];
     rawReader = createReader(path);
     readRawFile();
+    borderPoints = new int[20][2*alto+2*ancho][3];
+    sortedBorders = new int[20][2*alto+2*ancho][3];
   }
 
   void readRawFile() {
@@ -216,7 +230,7 @@ public class Filters {
   
   
   //Lo modifique para que directamente obtuviera los bordes ordenados de todas las superficies
-  void getSortedBorders(int[][][] borderPoints)
+  void getSortedBorders()
   {
     //Recorremos la matriz reducida, cuando encontramos un elemento !=0 obtenemos el borde al que pertenece y almacenamos ese borde.
     //recorremos el resto de puntos hasta que encontramos uno que no pertenece a un borde recorrido y lo usamos como nuevo punto inicial.
@@ -240,6 +254,8 @@ public class Filters {
         }
       }
     }
+    vertexes = new int[nBorders][2*alto+2*ancho][3];
+    vertexesCount = new int[nBorders];
     println("nBorders = "+ nBorders +" nPoints Border 1 = "+ numberOfPointsPerBorder[0]);
   }
   
@@ -488,15 +504,15 @@ public class Filters {
   //@param | borderPoints -> los puntos del borde ordenados
   //@param | nSurface -> numero de superficies de la imagen
   //@param | numberBorderPoints ->
-  void deleteUselessVertexes(int[][][] vertexes,int[] count,int[][][] borderPoints,int nSurface,int[] numberBorderPoints)
+  void deleteUselessVertexes()
   {
     int[] initialVertex = new int[2];
     int[] actualVertex = new int[2];
     int initialIndex;
     int j ;
-    for(int i=0;i<nSurface;i++)
+    for(int i=0;i<nBorders;i++)
     {
-      count[i] = 1;
+      vertexesCount[i] = 1;
       initialIndex = 0;
       initialVertex[0] = borderPoints[i][0][0]; 
       initialVertex[1] = borderPoints[i][0][1];
@@ -505,7 +521,7 @@ public class Filters {
       actualVertex[0] = borderPoints[i][1][0];
       actualVertex[1] = borderPoints[i][1][1];
       j = 2;
-      while(j<numberBorderPoints[i]+1)
+      while(j<numberOfPointsPerBorder[i]+1)
       {
 
         if(!isLine(initialVertex,actualVertex,initialIndex,borderPoints[i]))
@@ -514,13 +530,13 @@ public class Filters {
           initialVertex[0] = borderPoints[i][j-2][0];
           initialVertex[1] = borderPoints[i][j-2][1];
           initialIndex = j-2;
-          vertexes[i][count[i]][0] = borderPoints[i][j-2][0];
-          vertexes[i][count[i]][1] = borderPoints[i][j-2][1];
-          count[i]++;
+          vertexes[i][vertexesCount[i]][0] = borderPoints[i][j-2][0];
+          vertexes[i][vertexesCount[i]][1] = borderPoints[i][j-2][1];
+          vertexesCount[i]++;
         }
         else 
         {
-          if(j < numberBorderPoints[i])
+          if(j < numberOfPointsPerBorder[i])
           {
             actualVertex[0] = borderPoints[i][j][0];
             actualVertex[1] = borderPoints[i][j][1];
@@ -528,9 +544,9 @@ public class Filters {
           j++;
         }
       }
-      vertexes[i][count[i]][0] = borderPoints[i][numberBorderPoints[i]-1][0];
-      vertexes[i][count[i]][1] = borderPoints[i][numberBorderPoints[i]-1][1];
-      count[i]++;
+      vertexes[i][vertexesCount[i]][0] = borderPoints[i][numberOfPointsPerBorder[i]-1][0];
+      vertexes[i][vertexesCount[i]][1] = borderPoints[i][numberOfPointsPerBorder[i]-1][1];
+      vertexesCount[i]++;
     }  
   }
   

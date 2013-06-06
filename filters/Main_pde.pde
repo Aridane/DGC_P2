@@ -15,29 +15,28 @@ void setup(){
   }
   output.flush();
   output.close();
-  int[][][] sortedBorders = new int[20][4800][2];
-  filter.getSortedBorders(sortedBorders);
+
+  filter.getSortedBorders();
 
 
-  int[][][] vertexes = new int[filter.nBorders][filter.numberOfPointsPerBorder[0]][2];
-  int[] vertexesCount = new int[filter.nBorders];
-  filter.deleteUselessVertexes(vertexes,vertexesCount,sortedBorders,filter.nBorders,filter.numberOfPointsPerBorder);
+
+  filter.deleteUselessVertexes();
   println("vertices");
   for(int k=0;k<filter.nBorders;k++)
   {
     println("surface");
-    for(int i=0;i<vertexesCount[k];i++)
+    for(int i=0;i<filter.vertexesCount[k];i++)
     {
-      point(vertexes[k][i][0],vertexes[k][i][1]);
-      println(vertexes[k][i][0] + " " + vertexes[k][i][1]);
-      if(i<vertexesCount[k]-1)
+      point(filter.vertexes[k][i][0],filter.vertexes[k][i][1]);
+      println(filter.vertexes[k][i][0] + " " + filter.vertexes[k][i][1]);
+      if(i<filter.vertexesCount[k]-1)
       {
-        line(vertexes[k][i][0],vertexes[k][i][1],vertexes[k][i+1][0],vertexes[k][i+1][1]);
+        line(filter.vertexes[k][i][0],filter.vertexes[k][i][1],filter.vertexes[k][i+1][0],filter.vertexes[k][i+1][1]);
 
       }
       else
       {
-         line(vertexes[k][i][0],vertexes[k][i][1],vertexes[k][0][0],vertexes[k][0][1]);
+         line(filter.vertexes[k][i][0],filter.vertexes[k][i][1],filter.vertexes[k][0][0],filter.vertexes[k][0][1]);
       }
     }
   }
