@@ -22,8 +22,7 @@ public class Filters
   
   int[][][] vertexes;
   int[] vertexesCount;
-  int[][][] borderPoints;
-  int[][][] sortedBorders;
+  int[][][] sortedBorderPoints;
   
 
 
@@ -38,8 +37,7 @@ public class Filters
     reducedData = new int[dimX][dimY];
     rawReader = createReader(path);
     readRawFile();
-    borderPoints = new int[20][2*alto+2*ancho][3];
-    sortedBorders = new int[20][2*alto+2*ancho][3];
+    sortedBorderPoints = new int[20][2*alto+2*ancho][3];
   }
 
   void readRawFile() {
@@ -49,7 +47,7 @@ public class Filters
     for (int i=0;i<frameDimensions[0];i++) {
       try {
         line = rawReader.readLine();
-      } 
+      }
       catch (IOException e) {
         e.printStackTrace();
         line = null;
@@ -244,12 +242,12 @@ public class Filters
       {
         actualDepth = reducedData[i][j];
         int [] point = {j,i};
-        if ((actualDepth != 0) && (!isPartOf(point, borderPoints,actualDepth)))
+        if ((actualDepth != 0) && (!isPartOf(point, sortedBorderPoints,actualDepth)))
         {          
           initialBorderPoints[nBorders] = point;
           
-          numberOfPointsPerBorder[nBorders] = sortBorder(borderPoints[nBorders],point,actualDepth);
-          for(int k=0;k<numberOfPointsPerBorder[nBorders];k++) println(borderPoints[nBorders][k][0] + " " + borderPoints[nBorders][k][1]);
+          numberOfPointsPerBorder[nBorders] = sortBorder(nBorders,point,actualDepth);
+          //for(int k=0;k<numberOfPointsPerBorder[nBorders];k++) println(borderPoints[nBorders][k][0] + " " + borderPoints[nBorders][k][1]);
           nBorders++;
         }
       }
@@ -288,7 +286,7 @@ public class Filters
   //@return | numero de puntos del borde
   //@param | initialBorderPoint -> punto inicial
   //@param | depthValue -> valor de profundidad del punto inicial
-  int sortBorder(int[][] sortedBorderPoints,int[] initialBorderPoint,int depthValue)
+  int sortBorder(int surfaceID,int[] initialBorderPoint,int depthValue)
   {
     int[] dir = new int[2];;
     int[] actualPoint = new int[2];
@@ -303,8 +301,8 @@ public class Filters
     actualPoint[1] = initialBorderPoint[1] + dir[1];
     println("border Point = " + initialBorderPoint[0] + " " +  initialBorderPoint[1]);
     println("actual Point = " + actualPoint[0] + " " + actualPoint[1]);
-    sortedBorderPoints[0][0] = actualPoint[0];
-    sortedBorderPoints[0][1] = actualPoint[1];
+    sortedBorderPoints[surfaceID][0][0] = actualPoint[0];
+    sortedBorderPoints[surfaceID][0][1] = actualPoint[1];
     //Mientras el punto actual sea distinto del de partida (dado por borderPoints)
     while((actualPoint[0] != initialBorderPoint[0]) || (actualPoint[1] != initialBorderPoint[1]))
     {
@@ -323,8 +321,8 @@ public class Filters
         println("next Point = " + nextPoint[0] + " " + nextPoint[1]);
         println("next Dir = " + nextDir[0] + " " + nextDir[1]);
       }
-      sortedBorderPoints[count][0] = actualPoint[0];
-      sortedBorderPoints[count][1] = actualPoint[1];        
+      sortedBorderPoints[surfaceID][count][0] = actualPoint[0];
+      sortedBorderPoints[surfaceID][count][1] = actualPoint[1];        
       count++;
     }
     return count;
@@ -514,38 +512,38 @@ public class Filters
     {
       vertexesCount[i] = 1;
       initialIndex = 0;
-      initialVertex[0] = borderPoints[i][0][0]; 
-      initialVertex[1] = borderPoints[i][0][1];
+      initialVertex[0] = sortedBorderPoints[i][0][0]; 
+      initialVertex[1] = sortedBorderPoints[i][0][1];
       vertexes[i][0][0] = initialVertex[0];
       vertexes[i][0][1] = initialVertex[1];
-      actualVertex[0] = borderPoints[i][1][0];
-      actualVertex[1] = borderPoints[i][1][1];
+      actualVertex[0] = sortedBorderPoints[i][1][0];
+      actualVertex[1] = sortedBorderPoints[i][1][1];
       j = 2;
       while(j<numberOfPointsPerBorder[i]+1)
       {
 
-        if(!isLine(initialVertex,actualVertex,initialIndex,borderPoints[i]))
+        if(!isLine(initialVertex,actualVertex,initialIndex,sortedBorderPoints[i]))
         {
           //println("NO LINEA");
-          initialVertex[0] = borderPoints[i][j-2][0];
-          initialVertex[1] = borderPoints[i][j-2][1];
+          initialVertex[0] = sortedBorderPoints[i][j-2][0];
+          initialVertex[1] = sortedBorderPoints[i][j-2][1];
           initialIndex = j-2;
-          vertexes[i][vertexesCount[i]][0] = borderPoints[i][j-2][0];
-          vertexes[i][vertexesCount[i]][1] = borderPoints[i][j-2][1];
+          vertexes[i][vertexesCount[i]][0] = sortedBorderPoints[i][j-2][0];
+          vertexes[i][vertexesCount[i]][1] = sortedBorderPoints[i][j-2][1];
           vertexesCount[i]++;
         }
         else 
         {
           if(j < numberOfPointsPerBorder[i])
           {
-            actualVertex[0] = borderPoints[i][j][0];
-            actualVertex[1] = borderPoints[i][j][1];
+            actualVertex[0] = sortedBorderPoints[i][j][0];
+            actualVertex[1] = sortedBorderPoints[i][j][1];
           }
           j++;
         }
       }
-      vertexes[i][vertexesCount[i]][0] = borderPoints[i][numberOfPointsPerBorder[i]-1][0];
-      vertexes[i][vertexesCount[i]][1] = borderPoints[i][numberOfPointsPerBorder[i]-1][1];
+      vertexes[i][vertexesCount[i]][0] = sortedBorderPoints[i][numberOfPointsPerBorder[i]-1][0];
+      vertexes[i][vertexesCount[i]][1] = sortedBorderPoints[i][numberOfPointsPerBorder[i]-1][1];
       vertexesCount[i]++;
     }  
   }
