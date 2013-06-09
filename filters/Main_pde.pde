@@ -1,12 +1,12 @@
-int alt = 60;
-int anch = 80;
 PrintWriter output;
+int alt = 240;
+int anch = 320;
 void setup(){
-  size(anch, alt);
+  size(320, 240);
   background(102);
   stroke(255,0,15);
   output = createWriter("newMap.txt");
-  Filters filter = new Filters(alt,anch,"C:\\old_2.txt");
+  Filters filter = new Filters(anch,alt,"C:\\guit_front.txt");
   filter.deleteSparePointsByDepth();
     int [][] mat = filter.getReducedMatrix();
     for (int i=0;i<alt;i++){
@@ -17,10 +17,10 @@ void setup(){
   }
   output.flush();
   output.close();
-
+  filter.reducedData[0][171] = 0;
   filter.getSortedBorders();
 
-
+ 
 
   filter.deleteUselessVertexes();
   println("vertices");
@@ -33,12 +33,12 @@ void setup(){
       println(filter.vertexes[k][i][0] + " " + filter.vertexes[k][i][1]);
       if(i<filter.vertexesCount[k]-1)
       {
-        line(filter.vertexes[k][i][0],filter.vertexes[k][i][1],filter.vertexes[k][i+1][0],filter.vertexes[k][i+1][1]);
+        //line(filter.vertexes[k][i][0],filter.vertexes[k][i][1],filter.vertexes[k][i+1][0],filter.vertexes[k][i+1][1]);
 
       }
       else
       {
-         line(filter.vertexes[k][i][0],filter.vertexes[k][i][1],filter.vertexes[k][0][0],filter.vertexes[k][0][1]);
+         //line(filter.vertexes[k][i][0],filter.vertexes[k][i][1],filter.vertexes[k][0][0],filter.vertexes[k][0][1]);
       }
     }
   }
