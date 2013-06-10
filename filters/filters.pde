@@ -235,7 +235,7 @@ public class Filters {
     for (int i=0;i<frameDimensions[1];i++) {
       for (int j=0;j<frameDimensions[0];j++) {
         actualDepth = rawData[i][j];
-        if (actualDepth > (maxDepth - limitThres)) {
+        if ((actualDepth > (maxDepth - limitThres)) || (actualDepth < 200)) {
           reducedData[i][j] = 0;
         }
         else {
@@ -707,7 +707,7 @@ public class Filters {
 }
 
 //Todos los puntos se convierten a un sistema de referencia con respecto al centroide del objeto
-void changeVertexReferenceSystem(int [] centroid) {
+/*void changeVertexReferenceSystem(int [] centroid) {
   int Nx = 0, Ny = 0, Nz = 0;
   for (int k=0;k<nBorders;k++) {
     for (int i=0;i<vertexesCount[k];i++) {
@@ -740,4 +740,5 @@ void changeVertexReferenceSystem(int [] centroid) {
     }
   }
 }
+*/
 
