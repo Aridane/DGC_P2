@@ -6,7 +6,9 @@ void setup(){
   background(102);
   stroke(255,0,15);
   output = createWriter("newMap.txt");
-  Filters filter = new Filters(anch,alt,"C:\\guit_front.txt");
+
+  Filters filter = new Filters(320,240,"guit_front.txt",0,0,0,0);
+
   filter.deleteSparePointsByDepth();
     int [][] mat = filter.getReducedMatrix();
     for (int i=0;i<alt;i++){

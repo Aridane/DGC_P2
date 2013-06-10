@@ -18,22 +18,31 @@ public class Filters {
   private int maxDepth = 0;
   private int limitThres = 390;
   private int neighbourThres = 9;
-  private int neighbourDepthThres = 45;
+  private int neighbourDepthThres = 40;
+  private int centroidX, centroidY;
+  
+
   PrintWriter debug= createWriter("debug.txt");
 
   int[][][] vertexes;
   int[] vertexesCount;
   int[][][] sortedBorderPoints;
 
-  Filters(int dimX, int dimY, String path/*, int pview*/) {
+
+  Filters(int dimX, int dimY, String path, int pview, int cX, int cY, int vw) {
+
     ancho = dimX;
     alto = dimY;
+
     frameDimensions[0] = dimX;
     frameDimensions[1] = dimY;
    // view = pview;
     pathToRawFile = path;
     rawData = new int[dimY][dimX];
     reducedData = new int[dimY][dimX];
+    centroidX = cX;
+    centroidY = cY;
+    view = vw;
     for (int i=0;i<dimY;i++) {
       for (int j=0;j<dimX;j++) reducedData[i][j] = 0;
     }
@@ -238,7 +247,7 @@ public class Filters {
     for (int i=0;i<frameDimensions[1];i++) {
       for (int j=0;j<frameDimensions[0];j++) {
         actualDepth = rawData[i][j];
-        if (actualDepth > (maxDepth - limitThres)) {
+        if ((actualDepth > (maxDepth - limitThres)) || (actualDepth < 200)) {
           reducedData[i][j] = 0;
         }
         else {
@@ -724,14 +733,38 @@ println("border " + borderPoints[initialIndex+i][0] + " " + borderPoints[initial
 
 
 
-/*//Todos los puntos se convierten a un sistema de referencia con respecto al centroide del objeto
-void changeVertexReferenceSystem(int [] centroid) {
+//Todos los puntos se convierten a un sistema de referencia con respecto al centroide del objeto
+/*void changeVertexReferenceSystem(int [] centroid) {
+  int Nx = 0, Ny = 0, Nz = 0;
   for (int k=0;k<nBorders;k++) {
     for (int i=0;i<vertexesCount[k];i++) {
-    //Para el borde "k" y el vertice "i"
-    
+      //Para el borde "k" y el vertice "i"
+      switch(view){
+        case 1:
+          Nx = vertexes[k][i][0] - centroidX;
+          Ny = centroidY - vertexes[k][i][1];
+          Nz = centroidZ - vertexes[k][i][2];
+        break;
+        case 2:
+          Nx = centroidX - vertexes[k][i][2];
+          Ny = centroidY - vertexes[k][i][1];
+          Nz = centroidZ - vertexes[k][i][0];
+        break;
+        case 3:
+          Nx = centroidX - vertexes[k][i][2];
+          Ny = centroidY - vertexes[k][i][1];
+          Nz = vertexes[k][i][0] - centroidZ;
+        break;
+        case 4:
+          Nx = vertexes[k][i][2] - centroidX;
+          Ny = centroidY - vertexes[k][i][1];
+          Nz = vertexes[k][i][0] - centroidZ;
+        break;
+      }
+      vertexes[k][i][0] = Nx;
+      vertexes[k][i][1] = Ny;
+      vertexes[k][i][2] = Nz;
     }
-  }
-}*/
+  }*/
 }
 
