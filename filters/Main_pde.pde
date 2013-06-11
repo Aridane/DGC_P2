@@ -7,7 +7,7 @@ void setup(){
   stroke(255,0,15);
   output = createWriter("newMap.txt");
 
-  Filters filter = new Filters(anch,alt,"C:\\guit_front.txt",0,0,0,0);
+  Filters filter = new Filters(anch,alt,"C:\\pol_lado2.txt",0,0,0,0);
 
   filter.deleteSparePointsByDepth();
     int [][] mat = filter.getReducedMatrix();
@@ -19,7 +19,7 @@ void setup(){
   }
   output.flush();
   output.close();
-  filter.reducedData[0][171] = 0;
+  cheatingTool(filter);
   filter.getSortedBorders();
 
  
@@ -47,8 +47,13 @@ void setup(){
   }
 }
 
-
-void matching(Filters front,Filters perfil_1,Filters perfil_2,Filters tras)
+//Aqui modificas a mano lo que hace que no funcione
+void cheatingTool(Filters filter)
 {
-  
+  filter.reducedData[0][171] = 0;
+}
+
+void matching(Filters front,Filters perfil_1,Filters perfil_2,Filters tras,int threshold)
+{
+  //for(int i=0;i<front.nBorders;i++)
 }
