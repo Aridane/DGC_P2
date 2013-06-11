@@ -7,7 +7,7 @@ void setup(){
   stroke(255,0,15);
   output = createWriter("newMap.txt");
 
-  Filters filter = new Filters(320,240,"guit_front.txt",0,0,0,0);
+  Filters filter = new Filters(320,240,"pol_front.txt",0,0,0,0);
 
   filter.deleteSparePointsByDepth();
     int [][] mat = filter.getReducedMatrix();
