@@ -18,7 +18,7 @@ public class Filters {
   private int maxDepth = 0;
   private int limitThres = 390;
   private int neighbourThres = 9;
-  private int neighbourDepthThres = 45;
+  private int neighbourDepthThres = 40;
   private int centroidX, centroidY;
   
   PrintWriter debug= createWriter("debug.txt");

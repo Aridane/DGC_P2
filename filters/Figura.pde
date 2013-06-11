@@ -1,7 +1,11 @@
-/*class Figure{
+class Figure{
   float [][][] verteces;
   float [][][] tVerteces;
 
+  int nBorders = 0;
+    
+  float [] nVerteces;
+    
   float [] colour = new float[3];
   
 
@@ -23,15 +27,35 @@
   PVector centroid;
 
 
-  Figure() {
-   
+  Figure(int[][][] vert, int nb, int [] nvert) {
+    nVerteces = new float[nb];
+    verteces = new float[nb][][];
+    for (int i=0;i<nb;i++){
+      nVerteces[i] = nvert[i];
+      verteces[i] = new float[nvert[i]][3];
+      for (int j=0;j<nvert[i];j++){
+        for (int k=0;k<3;k++) verteces[i][j][k] = vert[i][j][k];
+      }
+    }
+    nBorders = nb;
   }
   //TODO Crear funcion miLinea, la cual aparte de dibujar la línea aplica la perspectiva.
   //buttonsPressed[6],buttonsPressed[7],buttonsPressed[8]
-  void draw(float k, boolean [] options) {
+  void draw() {
 
   }
-  void translate (float x, float y, float z, boolean [] options, float k) {
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  /*void translate (float x, float y, float z, boolean [] options, float k) {
     //Traslación 
     float [][] T = {
       {
@@ -236,8 +260,8 @@
     //normalizeNormals();
     updateCentroid();
 
-  }
-}*/
+  }*/
+}
 
 
 
