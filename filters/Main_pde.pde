@@ -2,7 +2,7 @@ PrintWriter output;
 int alt = 240;
 int anch = 320;
 void setup(){
-  size(320, 240);
+  size(1024, 1024);
   background(102);
   stroke(255,0,15);
   output = createWriter("newMap.txt");
@@ -23,6 +23,7 @@ void setup(){
  
 
   filter.deleteUselessVertexes();
+  filter.pixel2MM();
   println("vertices");
   for(int k=0;k<filter.nBorders;k++)
   {
@@ -33,13 +34,19 @@ void setup(){
       println(filter.vertexes[k][i][0] + " " + filter.vertexes[k][i][1]);
       if(i<filter.vertexesCount[k]-1)
       {
-        //line(filter.vertexes[k][i][0],filter.vertexes[k][i][1],filter.vertexes[k][i+1][0],filter.vertexes[k][i+1][1]);
+        line(filter.vertexes[k][i][0],filter.vertexes[k][i][1],filter.vertexes[k][i+1][0],filter.vertexes[k][i+1][1]);
 
       }
       else
       {
-         //line(filter.vertexes[k][i][0],filter.vertexes[k][i][1],filter.vertexes[k][0][0],filter.vertexes[k][0][1]);
+         line(filter.vertexes[k][i][0],filter.vertexes[k][i][1],filter.vertexes[k][0][0],filter.vertexes[k][0][1]);
       }
     }
   }
+}
+
+
+void matching(Filters front,Filters perfil_1,Filters perfil_2,Filters tras)
+{
+  
 }

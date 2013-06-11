@@ -319,8 +319,8 @@ public class Filters {
   boolean sortBorder(int[] initialBorderPoint,int depthValue)
   {
     int[] dir = new int[2];;
-    int[] actualPoint = new int[2];
-    int[] nextPoint = new int[2];
+    int[] actualPoint = new int[3];
+    int[] nextPoint = new int[3];
     int[] nextDir = new int[2];
     numberOfPointsPerBorder[nBorders] = 1;
 
@@ -333,6 +333,7 @@ public class Filters {
     //println("actual Point = " + actualPoint[0] + " " + actualPoint[1]);
     sortedBorderPoints[nBorders][0][0] = actualPoint[0];
     sortedBorderPoints[nBorders][0][1] = actualPoint[1];
+    sortedBorderPoints[nBorders][0][2] = reducedData[actualPoint[1]][actualPoint[0]];
     //Mientras el punto actual sea distinto del de partida (dado por borderPoints)
     while((actualPoint[0] != initialBorderPoint[0]) || (actualPoint[1] != initialBorderPoint[1]))
     {
@@ -341,6 +342,7 @@ public class Filters {
       
       actualPoint[0] = nextPoint[0];
       actualPoint[1] = nextPoint[1];
+      actualPoint[2] = nextPoint[2];
       dir[0] = nextDir[0];
       dir[1] = nextDir[1];
 /*      if((actualPoint[0] == 35) && (actualPoint[1] == 0))
@@ -353,6 +355,7 @@ public class Filters {
      // }
       sortedBorderPoints[nBorders][numberOfPointsPerBorder[nBorders]][0] = actualPoint[0];
       sortedBorderPoints[nBorders][numberOfPointsPerBorder[nBorders]][1] = actualPoint[1];
+      sortedBorderPoints[nBorders][numberOfPointsPerBorder[nBorders]][2] = reducedData[actualPoint[1]][actualPoint[0]];
       numberOfPointsPerBorder[nBorders]++;
     }
     return true;
@@ -419,7 +422,7 @@ public class Filters {
 
   void getActualPointAndNextDir(int[] nextPoint,int[] nextDir,int[] actualPoint,int[] actualDir, int depthVal)
   {
-    int[][] neighs = new int[8][2];
+    int[][] neighs = new int[8][3];
     int neighNumber;
     neighNumber = getNeighs(neighs,actualPoint,actualDir,depthVal);
     if((actualPoint[0] == 0) && (actualPoint[1] == 36))
@@ -479,6 +482,7 @@ public class Filters {
           }*/
           neighs[count][0] = startPoint[0]+j;
           neighs[count][1] = startPoint[1]+i;
+          neighs[count][2] = reducedData[startPoint[1]+i][startPoint[0]+j];
           count++;
         }
       }
@@ -501,6 +505,7 @@ public class Filters {
     //Inicialmente el primer vecino (uno cualquiera)
     nextPoint[0] = neighs[0][0];
     nextPoint[1] = neighs[0][1];
+    nextPoint[2] = neighs[0][2];
     //println("actual dir better = " + actualDir[0] + " " + actualDir[1]);
     for(int i=1;i<neighNumber;i++)
     {
@@ -509,6 +514,7 @@ public class Filters {
       {
         nextPoint[0] = neighs[i][0];
         nextPoint[1] = neighs[i][1];
+        nextPoint[2] = neighs[i][2];
       }
       //println("Point better = " + nextPoint[0] + " " + nextPoint[1]);
     }
@@ -551,8 +557,8 @@ println("next Point get = " + nextPoint[0] + " " + nextPoint[1]);*/
   //@param | numberBorderPoints ->
   void deleteUselessVertexes()
   {
-    int[] initialVertex = new int[2];
-    int[] actualVertex = new int[2];
+    int[] initialVertex = new int[3];
+    int[] actualVertex = new int[3];
     int initialIndex;
     int j ;
     for(int i=0;i<nBorders;i++)
@@ -561,10 +567,13 @@ println("next Point get = " + nextPoint[0] + " " + nextPoint[1]);*/
       initialIndex = 0;
       initialVertex[0] = sortedBorderPoints[i][0][0];
       initialVertex[1] = sortedBorderPoints[i][0][1];
+      initialVertex[2] = sortedBorderPoints[i][0][2];
       vertexes[i][0][0] = initialVertex[0];
       vertexes[i][0][1] = initialVertex[1];
+      vertexes[i][0][2] = initialVertex[2];
       actualVertex[0] = sortedBorderPoints[i][1][0];
       actualVertex[1] = sortedBorderPoints[i][1][1];
+      actualVertex[2] = sortedBorderPoints[i][1][2];
       j = 2;
       while(j<numberOfPointsPerBorder[i]+1)
       {
@@ -574,9 +583,11 @@ println("next Point get = " + nextPoint[0] + " " + nextPoint[1]);*/
           //println("NO LINEA");
           initialVertex[0] = sortedBorderPoints[i][j-2][0];
           initialVertex[1] = sortedBorderPoints[i][j-2][1];
+          initialVertex[2] = sortedBorderPoints[i][j-2][2];
           initialIndex = j-2;
           vertexes[i][vertexesCount[i]][0] = sortedBorderPoints[i][j-2][0];
           vertexes[i][vertexesCount[i]][1] = sortedBorderPoints[i][j-2][1];
+          vertexes[i][vertexesCount[i]][2] = sortedBorderPoints[i][j-2][2];
           vertexesCount[i]++;
         }
         else
@@ -585,12 +596,14 @@ println("next Point get = " + nextPoint[0] + " " + nextPoint[1]);*/
           {
             actualVertex[0] = sortedBorderPoints[i][j][0];
             actualVertex[1] = sortedBorderPoints[i][j][1];
+            actualVertex[2] = sortedBorderPoints[i][j][2];
           }
           j++;
         }
       }
       vertexes[i][vertexesCount[i]][0] = sortedBorderPoints[i][numberOfPointsPerBorder[i]-1][0];
       vertexes[i][vertexesCount[i]][1] = sortedBorderPoints[i][numberOfPointsPerBorder[i]-1][1];
+      vertexes[i][vertexesCount[i]][2] = sortedBorderPoints[i][numberOfPointsPerBorder[i]-1][2];
       vertexesCount[i]++;
     }
   }
@@ -731,6 +744,28 @@ println("border " + borderPoints[initialIndex+i][0] + " " + borderPoints[initial
     return 0;
   }
 
+
+  void pixel2MM()
+  {
+    for(int i=0;i<nBorders;i++)
+    {
+      for(int j=0;j<vertexesCount[i];j++)
+      {
+        singlePixel2MM(i,j);
+      }
+    }
+  }
+  
+  
+  void singlePixel2MM(int border,int indexPoint)
+  {
+    vertexes[border][indexPoint][2] = 540*970 / 1400;
+    vertexes[border][indexPoint][0] = vertexes[border][indexPoint][0] * vertexes[border][indexPoint][2] / 160;
+    vertexes[border][indexPoint][1] = vertexes[border][indexPoint][1] * vertexes[border][indexPoint][2] / 160;
+  }
+  
+  
+  
 
 
 /*//Todos los puntos se convierten a un sistema de referencia con respecto al centroide del objeto
