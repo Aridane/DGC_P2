@@ -18,19 +18,17 @@ public class Filters {
   private int maxDepth = 0;
   private int limitThres = 390;
   private int neighbourThres = 9;
-  private int neighbourDepthThres = 40;
+  private int neighbourDepthThres = 45;
   private int centroidX, centroidY;
   
-
   PrintWriter debug= createWriter("debug.txt");
 
   int[][][] vertexes;
   int[] vertexesCount;
   int[][][] sortedBorderPoints;
 
-
-  Filters(int dimX, int dimY, String path, int pview, int cX, int cY, int vw) {
-
+  Filters(int dimX, int dimY, String path, int pview, int cX, int cY, int vw)
+  {
     ancho = dimX;
     alto = dimY;
 
@@ -99,7 +97,7 @@ public class Filters {
     int counter = 0;
     int oldNeighbourThres = neighbourThres;
     if ((i == 0)&&(j == 0)) {
-      println("C1");
+      //println("C1");
       neighbourThres = 5;
       for (int ic=0;ic<2;ic++) {
         for (int jc=0;jc<2;jc++) {
@@ -115,7 +113,7 @@ public class Filters {
       return false;
     }
     else if ((i == 0)&&(j == frameDimensions[0]-1)) {
-      println("C2");
+      //println("C2");
       neighbourThres = 5;
       for (int ic=0;ic<2;ic++) {
         for (int jc=-1;jc<1;jc++) {
@@ -131,7 +129,7 @@ public class Filters {
       return false;
     }
     else if ((i == frameDimensions[1]-1)&&(j == 0)) {
-      println("C3");
+//println("C3");
       neighbourThres = 5;
       for (int ic=-1;ic<1;ic++) {
         for (int jc=0;jc<2;jc++) {
@@ -147,7 +145,7 @@ public class Filters {
       return false;
     }
     else if ((i == frameDimensions[1]-1)&&(j == frameDimensions[0]-1)) {
-      println("C4");
+//println("C4");
       neighbourThres = 5;
       for (int ic=-1;ic<1;ic++) {
         for (int jc=-1;jc<1;jc++) {
@@ -163,7 +161,7 @@ public class Filters {
       return false;
     }
     else if (i == 0) {
-      println("C5");
+//println("C5");
       neighbourThres = 7;
 
       for (int ic=0;ic<2;ic++) {
@@ -173,7 +171,7 @@ public class Filters {
           }
         }
       }
-      println("nbTH = "+neighbourThres+"counter = "+counter+"i = "+ i + " j = "+j);
+      //println("nbTH = "+neighbourThres+"counter = "+counter+"i = "+ i + " j = "+j);
 
       if (counter < neighbourThres) {
         neighbourThres = oldNeighbourThres;
@@ -182,7 +180,7 @@ public class Filters {
       return false;
     }
     else if (j == 0) {
-      println("C6");
+      //println("C6");
       neighbourThres = 7;
       for (int ic=-1;ic<2;ic++) {
         for (int jc=0;jc<2;jc++) {
@@ -198,7 +196,7 @@ public class Filters {
       return false;
     }
     else if (i == frameDimensions[1]-1) {
-      println("C7");
+      //println("C7");
       neighbourThres = 7;
       for (int ic=-1;ic<1;ic++) {
         for (int jc=-1;jc<2;jc++) {
@@ -214,7 +212,7 @@ public class Filters {
       return false;
     }
     else if (j == frameDimensions[0]-1) {
-      println("C8");
+      //println("C8");
       neighbourThres = 7;
       for (int ic=-1;ic<2;ic++) {
         for (int jc=-1;jc<1;jc++) {
@@ -274,21 +272,27 @@ public class Filters {
     {
       for (int j=0;j<frameDimensions[1];j++)
       {
-        actualDepth = reducedData[i][j];
-        int [] point = {j,i};
+        actualDepth = reducedData[j][i];
+        int [] point = {i,j};
         if ((actualDepth != 0) && (!isPartOf(point, sortedBorderPoints,actualDepth)))
         {
-          initialBorderPoints[nBorders] = point;
+          try
+          {
+            println("depth = " + actualDepth);
+            println("point = " + point[0] + " " + point[1]);
+            initialBorderPoints[nBorders] = point;
           
-          sortBorder(point,actualDepth);
-          //for(int k=0;k<numberOfPointsPerBorder[nBorders];k++) println(borderPoints[nBorders][k][0] + " " + borderPoints[nBorders][k][1]);
-          nBorders++;
+            if(sortBorder(point,actualDepth)) nBorders++;
+          }
+          catch (ArrayIndexOutOfBoundsException e)
+          {
+          }
         }
       }
     }
     vertexes = new int[nBorders][2*alto+2*ancho][3];
     vertexesCount = new int[nBorders];
-    println("nBorders = "+ nBorders +" nPoints Border 1 = "+ numberOfPointsPerBorder[0]);
+//println("nBorders = "+ nBorders +" nPoints Border 1 = "+ numberOfPointsPerBorder[0]);
   }
 
 
@@ -320,23 +324,24 @@ public class Filters {
   //@return | numero de puntos del borde
   //@param | initialBorderPoint -> punto inicial
   //@param | depthValue -> valor de profundidad del punto inicial
-  void sortBorder(int[] initialBorderPoint,int depthValue)
+  boolean sortBorder(int[] initialBorderPoint,int depthValue)
   {
     int[] dir = new int[2];;
-    int[] actualPoint = new int[2];
-    int[] nextPoint = new int[2];
+    int[] actualPoint = new int[3];
+    int[] nextPoint = new int[3];
     int[] nextDir = new int[2];
     numberOfPointsPerBorder[nBorders] = 1;
 
     //Obtener la direccion inicial y el punto actual
-    getInitialDir(dir,initialBorderPoint[0],initialBorderPoint[1],depthValue);
-    println("initial dir = " + dir[0] + " " + dir[1]);
+    if(!getInitialDir(dir,initialBorderPoint[0],initialBorderPoint[1],depthValue)) return false;
+    //println("initial dir = " + dir[0] + " " + dir[1]);
     actualPoint[0] = initialBorderPoint[0] + dir[0];
     actualPoint[1] = initialBorderPoint[1] + dir[1];
-    println("border Point = " + initialBorderPoint[0] + " " + initialBorderPoint[1]);
-    println("actual Point = " + actualPoint[0] + " " + actualPoint[1]);
+    //println("border Point = " + initialBorderPoint[0] + " " + initialBorderPoint[1]);
+    //println("actual Point = " + actualPoint[0] + " " + actualPoint[1]);
     sortedBorderPoints[nBorders][0][0] = actualPoint[0];
     sortedBorderPoints[nBorders][0][1] = actualPoint[1];
+    sortedBorderPoints[nBorders][0][2] = reducedData[actualPoint[1]][actualPoint[0]];
     //Mientras el punto actual sea distinto del de partida (dado por borderPoints)
     while((actualPoint[0] != initialBorderPoint[0]) || (actualPoint[1] != initialBorderPoint[1]))
     {
@@ -345,89 +350,93 @@ public class Filters {
       
       actualPoint[0] = nextPoint[0];
       actualPoint[1] = nextPoint[1];
+      actualPoint[2] = nextPoint[2];
       dir[0] = nextDir[0];
       dir[1] = nextDir[1];
 /*      if((actualPoint[0] == 35) && (actualPoint[1] == 0))
       {*/
   //      println("initial Point = " + initialBorderPoint[0] + " " + initialBorderPoint[1]);
-        println("actual Point = " + actualPoint[0] + " " + actualPoint[1]);
+        /*println("actual Point = " + actualPoint[0] + " " + actualPoint[1]);
         println("actual Dir = " + dir[0] + " " + dir[1]);
         println("next Point = " + nextPoint[0] + " " + nextPoint[1]);
-        println("next Dir = " + nextDir[0] + " " + nextDir[1]);
+        println("next Dir = " + nextDir[0] + " " + nextDir[1]);*/
      // }
       sortedBorderPoints[nBorders][numberOfPointsPerBorder[nBorders]][0] = actualPoint[0];
       sortedBorderPoints[nBorders][numberOfPointsPerBorder[nBorders]][1] = actualPoint[1];
+      sortedBorderPoints[nBorders][numberOfPointsPerBorder[nBorders]][2] = reducedData[actualPoint[1]][actualPoint[0]];
       numberOfPointsPerBorder[nBorders]++;
     }
+    return true;
   }
 
 
 
-  void getInitialDir(int[] dir,int x,int y,int depthVal)
+  boolean getInitialDir(int[] dir,int x,int y,int depthVal)
   {
-      println("xy " + x + " " + y);
+      //println("xy " + x + " " + y);
       if((y+1 >= 0) && (x >= 0) && (y+1 < reducedData.length) && (x < reducedData[0].length) && (inRange(depthVal,y+1,x)))
       {
         dir[0] = 0;
         dir[1] = 1;
-        return;
+        return true;
       }
       if((y >= 0) && (x+1 >= 0) && (y < reducedData.length) && (x+1 < reducedData[0].length) && (inRange(depthVal,y,x+1)))
       {
         dir[0] = 1;
         dir[1] = 0;
-        return;
+        return true;
       }
       if((y+1 >= 0) && (x-1 >= 0) && (y+1 < reducedData.length) && (x-1 < reducedData[0].length) && (inRange(depthVal,y+1,x-1)))
       {
         dir[0] = -1;
         dir[1] = 1;
-        return;
+        return true;
       }
       if((y-1 >= 0) && (x+1 >= 0) && (y-1 < reducedData.length) && (x+1 < reducedData[0].length) && (inRange(depthVal,y-1,x+1)))
       {
         dir[0] = 1;
         dir[1] = -1;
-        return;
+        return true;
       }
       if((y-1 >= 0) && (x >= 0) && (y-1 < reducedData.length) && (x < reducedData[0].length) && (inRange(depthVal,y-1,x)))
       {
         dir[0] = 0;
         dir[1] = -1;
-        return;
+        return true;
       }
       if((y >= 0) && (x-1 >= 0) && (y < reducedData.length) && (x-1 < reducedData[0].length) && (inRange(depthVal,y,x-1)))
       {
         dir[0] = -1;
         dir[1] = 0;
-        return;
+        return true;
       }
       if((y+1 >= 0) && (x+1 >= 0) && (y+1 < reducedData.length) && (x+1 < reducedData[0].length) && (inRange(depthVal,y+1,x+1)))
       {
         dir[0] = 1;
         dir[1] = 1;
-        return;
+        return true;
       }
       if((y-1 >= 0) && (x-1 >= 0) && (y-1 < reducedData.length) && (x-1 < reducedData[0].length) && (inRange(depthVal,y-1,x-1)))
       {
         dir[0] = -1;
         dir[1] = -1;
+        return true;
       }
+      return false;
   }
 
 
 
   void getActualPointAndNextDir(int[] nextPoint,int[] nextDir,int[] actualPoint,int[] actualDir, int depthVal)
   {
-    int[][] neighs = new int[8][2];
+    int[][] neighs = new int[8][3];
     int neighNumber;
     neighNumber = getNeighs(neighs,actualPoint,actualDir,depthVal);
     if((actualPoint[0] == 0) && (actualPoint[1] == 36))
     {
-      System.out.println("ojhooj");
       for(int i=0;i<neighNumber;i++)
       {
-        System.out.println("neigh = " + neighs[i][0] + " " + neighs[i][1]);
+        //System.out.println("neigh = " + neighs[i][0] + " " + neighs[i][1]);
       }
     }
     if((actualPoint[0] == 108) && (actualPoint[1] == 220))
@@ -452,13 +461,13 @@ public class Filters {
     int count = 0;
     startPoint[0] = point[0]-1;
     startPoint[1] = point[1]-1;
-    if((point[0] == 108)&&(point[1] == 220))
+  /*  if((point[0] == 108)&&(point[1] == 220))
     {
     println("Point = " + point[0] + " " + point[1]);
     println("start Point = " + startPoint[0] + " " + startPoint[1]);
     println("dir = " + dir[0] + " " + dir[1]);
     println("depthval " + depthVal);
-    }
+    }*/
      
     for(int i=0;i<3;i++)
     {
@@ -466,20 +475,21 @@ public class Filters {
       {
           if((point[0] == 108)&&(point[1] == 220))
           {
-             println("coorde = " + (startPoint[0]+j) + " " + (startPoint[1]+i));
-             println("diff = "+(abs(reducedData[startPoint[1]+i][startPoint[0]+j] - depthVal)));
-             if(!inRangeInReduced(depthVal,startPoint[1]+i,startPoint[0]+j)) println("no esta en rango");
+             /*println("coorde = " + (startPoint[0]+j) + " " + (startPoint[1]+i));
+             println("diff = "+(abs(reducedData[startPoint[1]+i][startPoint[0]+j] - depthVal)));*/
+             //if(!inRangeInReduced(depthVal,startPoint[1]+i,startPoint[0]+j)) println("no esta en rango");
           }
         if((!isSorted(startPoint[0]+j,startPoint[1]+i)) && (startPoint[1]+i >= 0) && (startPoint[0]+j >= 0) && (startPoint[1]+i < reducedData.length) && (startPoint[0]+j < reducedData[0].length) && ((i != 1) || (j != 1)) && ((i != 1 - dir[1]) || (j != 1 - dir[0])) && (inRangeInReduced(depthVal,startPoint[1]+i,startPoint[0]+j)))
         {
-          if((point[0] == 108)&&(point[1] == 220))
+        /*  if((point[0] == 108)&&(point[1] == 220))
           {
                 println("coorde = " + (startPoint[0]+j) + " " + (startPoint[1]+i));
                 println("INRANGE?? = " + reducedData[startPoint[1]+i][startPoint[0]+j]);
                 println("entro");
-          }
+          }*/
           neighs[count][0] = startPoint[0]+j;
           neighs[count][1] = startPoint[1]+i;
+          neighs[count][2] = reducedData[startPoint[1]+i][startPoint[0]+j];
           count++;
         }
       }
@@ -502,6 +512,7 @@ public class Filters {
     //Inicialmente el primer vecino (uno cualquiera)
     nextPoint[0] = neighs[0][0];
     nextPoint[1] = neighs[0][1];
+    nextPoint[2] = neighs[0][2];
     //println("actual dir better = " + actualDir[0] + " " + actualDir[1]);
     for(int i=1;i<neighNumber;i++)
     {
@@ -510,6 +521,7 @@ public class Filters {
       {
         nextPoint[0] = neighs[i][0];
         nextPoint[1] = neighs[i][1];
+        nextPoint[2] = neighs[i][2];
       }
       //println("Point better = " + nextPoint[0] + " " + nextPoint[1]);
     }
@@ -552,8 +564,8 @@ println("next Point get = " + nextPoint[0] + " " + nextPoint[1]);*/
   //@param | numberBorderPoints ->
   void deleteUselessVertexes()
   {
-    int[] initialVertex = new int[2];
-    int[] actualVertex = new int[2];
+    int[] initialVertex = new int[3];
+    int[] actualVertex = new int[3];
     int initialIndex;
     int j ;
     for(int i=0;i<nBorders;i++)
@@ -562,10 +574,13 @@ println("next Point get = " + nextPoint[0] + " " + nextPoint[1]);*/
       initialIndex = 0;
       initialVertex[0] = sortedBorderPoints[i][0][0];
       initialVertex[1] = sortedBorderPoints[i][0][1];
+      initialVertex[2] = sortedBorderPoints[i][0][2];
       vertexes[i][0][0] = initialVertex[0];
       vertexes[i][0][1] = initialVertex[1];
+      vertexes[i][0][2] = initialVertex[2];
       actualVertex[0] = sortedBorderPoints[i][1][0];
       actualVertex[1] = sortedBorderPoints[i][1][1];
+      actualVertex[2] = sortedBorderPoints[i][1][2];
       j = 2;
       while(j<numberOfPointsPerBorder[i]+1)
       {
@@ -575,9 +590,11 @@ println("next Point get = " + nextPoint[0] + " " + nextPoint[1]);*/
           //println("NO LINEA");
           initialVertex[0] = sortedBorderPoints[i][j-2][0];
           initialVertex[1] = sortedBorderPoints[i][j-2][1];
+          initialVertex[2] = sortedBorderPoints[i][j-2][2];
           initialIndex = j-2;
           vertexes[i][vertexesCount[i]][0] = sortedBorderPoints[i][j-2][0];
           vertexes[i][vertexesCount[i]][1] = sortedBorderPoints[i][j-2][1];
+          vertexes[i][vertexesCount[i]][2] = sortedBorderPoints[i][j-2][2];
           vertexesCount[i]++;
         }
         else
@@ -586,12 +603,14 @@ println("next Point get = " + nextPoint[0] + " " + nextPoint[1]);*/
           {
             actualVertex[0] = sortedBorderPoints[i][j][0];
             actualVertex[1] = sortedBorderPoints[i][j][1];
+            actualVertex[2] = sortedBorderPoints[i][j][2];
           }
           j++;
         }
       }
       vertexes[i][vertexesCount[i]][0] = sortedBorderPoints[i][numberOfPointsPerBorder[i]-1][0];
       vertexes[i][vertexesCount[i]][1] = sortedBorderPoints[i][numberOfPointsPerBorder[i]-1][1];
+      vertexes[i][vertexesCount[i]][2] = sortedBorderPoints[i][numberOfPointsPerBorder[i]-1][2];
       vertexesCount[i]++;
     }
   }
@@ -731,6 +750,29 @@ println("border " + borderPoints[initialIndex+i][0] + " " + borderPoints[initial
     }
     return 0;
   }
+
+
+  void pixel2MM()
+  {
+    for(int i=0;i<nBorders;i++)
+    {
+      for(int j=0;j<vertexesCount[i];j++)
+      {
+        singlePixel2MM(i,j);
+      }
+    }
+  }
+  
+  
+  void singlePixel2MM(int border,int indexPoint)
+  {
+    vertexes[border][indexPoint][2] = 540*970 / 1400;
+    vertexes[border][indexPoint][0] = vertexes[border][indexPoint][0] * vertexes[border][indexPoint][2] / 160;
+    vertexes[border][indexPoint][1] = vertexes[border][indexPoint][1] * vertexes[border][indexPoint][2] / 160;
+  }
+  
+  
+  
 
 
 

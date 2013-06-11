@@ -2,7 +2,7 @@ PrintWriter output;
 int alt = 240;
 int anch = 320;
 void setup(){
-  size(320, 240);
+  size(1024, 1024);
   background(102);
   stroke(255,0,15);
   output = createWriter("newMap.txt");
@@ -19,12 +19,13 @@ void setup(){
   }
   output.flush();
   output.close();
-  filter.reducedData[0][171] = 0;
+  cheatingTool(filter);
   filter.getSortedBorders();
 
  
 
   filter.deleteUselessVertexes();
+  filter.pixel2MM();
   println("vertices");
   for(int k=0;k<filter.nBorders;k++)
   {
@@ -44,4 +45,15 @@ void setup(){
       }
     }
   }
+}
+
+//Aqui modificas a mano lo que hace que no funcione
+void cheatingTool(Filters filter)
+{
+  filter.reducedData[0][171] = 0;
+}
+
+void matching(Filters front,Filters perfil_1,Filters perfil_2,Filters tras,int threshold)
+{
+  //for(int i=0;i<front.nBorders;i++)
 }
