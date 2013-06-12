@@ -18,7 +18,7 @@ public class Filters {
   private int maxDepth = 0;
   private int limitThres = 390;
   private int neighbourThres = 9;
-  private int neighbourDepthThres = 45;
+  private int neighbourDepthThres = 40;
   private int centroidX, centroidY;
   
   PrintWriter debug= createWriter("debug.txt");
@@ -32,7 +32,7 @@ public class Filters {
     ancho = dimX;
     alto = dimY;
 
-    frameDimensions[0] = dimX;
+    frameDimensions[0] = dimX-1;
     frameDimensions[1] = dimY;
    // view = pview;
     pathToRawFile = path;
@@ -63,7 +63,8 @@ public class Filters {
       }
       lineStringValues = line.split(" ");
       println("Y = "+i+"Split Length"+lineStringValues.length);
-      for (int j=0;j<frameDimensions[0]-1;j++) {
+      for (int j=0;j<frameDimensions[0];j++) {
+        println("Linea "+i+" Elemento "+j);
         rawData[i][j] = Integer.parseInt(lineStringValues[j]);
         if (rawData[i][j] > maxDepth) maxDepth = rawData[i][j];
       }
