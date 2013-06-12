@@ -135,6 +135,7 @@ boolean isNotACheckedPair(int[][][] pairs,int i,int j,int k,int m)
   return true;
 }
 
+
 double euclideanDistance(int[] vec_1,int[] vec_2)
 {
   return Math.sqrt((vec_1[0]*-vec_2[0])*(vec_1[0]*-vec_2[0]) + (vec_1[1]*-vec_2[1])*(vec_1[1]*-vec_2[1]) + (vec_1[2]*-vec_2[2])*(vec_1[2]*-vec_2[2]));
