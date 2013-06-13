@@ -1,5 +1,6 @@
 class Figure{
   float [][][][] verteces;
+  float[][][][] auxVerteces;
   float [][][][] tVerteces;
 
   int [] nBorders;
@@ -30,16 +31,19 @@ class Figure{
   Figure(float [][][][] vert, int [] nb, int [][] nvert) {
     nVerteces = new int[4][];
     verteces = new float[4][][][];
+    auxVerteces = new float[4][][][];
     tVerteces = new float[4][][][];
     nBorders = new int[4];
     for (int h=0;h<4;h++){
       nVerteces[h] = new int[nb[h]];
       verteces[h] = new float[nb[h]][][];
+      auxVerteces[h] = new float[nb[h]][][];
       tVerteces[h] = new float[nb[h]][][];
       nBorders[h] = nb[h];
       for (int i=0;i<nb[h];i++){
         nVerteces[h][i] = nvert[h][i];
         verteces[h][i] = new float[nvert[h][i]][4];
+        auxVerteces[h][i] = new float[nvert[h][i]][4];
         tVerteces[h][i] = new float[nvert[h][i]][4];
         for (int j=0;j<nvert[h][i];j++){
           verteces[h][i][j][0] = vert[h][i][j][0];
@@ -305,6 +309,124 @@ class Figure{
     updateCentroid();
 
   }*/
+
+
+void matching(int threshold)
+{
+  singleMatching(0,1,threshold);
+  singleMatching(0,3,threshold);
+  singleMatching(0,2,threshold);
+  singleMatching(1,3,threshold);
+  singleMatching(1,2,threshold);
+  singleMatching(3,2,threshold);
+  for(int i=0;i<4;i++)
+  {
+    for(int j=0;j<verteces[i].length;j++)
+    {
+      for(int k=0;k<verteces[i][j].length;k++)
+      {
+        for(int m=0;m<verteces[i][j][k].length;m++)
+        {
+          verteces[i][j][k][m] = auxVerteces[i][j][k][m];
+        }
+      }
+    }
+  }
+}
+
+
+
+void singleMatching(int index_1,int index_2,int threshold)
+{
+  int max1 = getMaxNumberOfPoints(index_1);
+  int max2 = getMaxNumberOfPoints(index_2);
+  int pairIndex_1 = 0;
+  int pairIndex_2 = 0;
+  int[][][] pairs = new int[2*nBorders[index_1]*nBorders[index_2]+max2][2*max1*max2][4];
+  for(int i=0;i<nBorders[index_1];i++)
+  {
+    for(int j=0;j<nBorders[index_2];j++)
+    {
+      for(int k=0;k<nVerteces[index_1][i];k++)
+      {
+        for(int m=0;m<nVerteces[index_2][j];m++)
+        {
+  //        if(isNotACheckedPair(pairs,i,j,k,m))
+  //        {
+            println("distancia = " + euclideanDistance(verteces[index_1][i][k],verteces[index_2][j][m]));
+            if(euclideanDistance(verteces[index_1][i][k],verteces[index_2][j][m]) < threshold)
+            {
+              println("CAMBIO");
+              auxVerteces[index_1][i][k][0] = mean(verteces[index_1][i][k][0],verteces[index_2][j][m][0]);
+              auxVerteces[index_1][i][k][1] = mean(verteces[index_1][i][k][1],verteces[index_2][j][m][1]);
+              auxVerteces[index_1][i][k][2] = mean(verteces[index_1][i][k][2],verteces[index_2][j][m][2]);
+              
+              auxVerteces[index_2][j][m][0] = mean(verteces[index_1][i][k][0],verteces[index_2][j][m][0]);
+              auxVerteces[index_2][j][m][1] = mean(verteces[index_1][i][k][1],verteces[index_2][j][m][1]);
+              auxVerteces[index_2][j][m][2] = mean(verteces[index_1][i][k][2],verteces[index_2][j][m][2]);
+            }
+            else
+            {
+              //println("i = " + i + " j = " + j + "k = " + k + " m = " + m); 
+              auxVerteces[index_1][i][k][0] = verteces[index_1][i][k][0];
+              auxVerteces[index_1][i][k][1] = verteces[index_1][i][k][1];
+              auxVerteces[index_1][i][k][2] = verteces[index_1][i][k][2];
+              
+              
+              /*
+             println("LEEENGTH = " +   verteces[index_2][j].length); 
+     println("LEEENGTH = " +   vertexes_2[j].length);           
+     println("cual = " + index_1 + " " + index_2);*/
+              auxVerteces[index_2][j][m][0] = verteces[index_2][j][m][0];
+              auxVerteces[index_2][j][m][1] = verteces[index_2][j][m][1];
+              auxVerteces[index_2][j][m][2] = verteces[index_2][j][m][2];
+            //}
+     /*       pairs[pairIndex_1][pairIndex_2][0] = i;
+            pairs[pairIndex_1][pairIndex_2][1] = j;
+            pairs[pairIndex_1][pairIndex_2][2] = k;
+            pairs[pairIndex_1][pairIndex_2][3] = m;
+            pairIndex_2++;*/
+          }
+        }
+      }
+      //pairIndex_1++;
+    }
+  }
+}
+
+int getMaxNumberOfPoints(int index)
+{
+  int max = 0;
+  for(int i=0;i<nBorders[index];i++)
+  {
+    if(nVerteces[index][i] > max) max = nVerteces[index][i];
+  }
+  return max;
+}
+
+boolean isNotACheckedPair(int[][][] pairs,int i,int j,int k,int m)
+{
+  for(int p=0;p<pairs.length;p++)
+  {
+    for(int q=0;q<pairs[0].length;q++)
+    {
+      if((pairs[p][q][0] == i) && (pairs[p][q][1] == j) && (pairs[p][q][2] == k) && (pairs[p][q][3] == m)) return false;
+    }
+  }
+  return true;
+}
+
+
+double euclideanDistance(float[] vec_1,float[] vec_2)
+{
+  return Math.sqrt((vec_1[0]-vec_2[0])*(vec_1[0]-vec_2[0]) + (vec_1[1]-vec_2[1])*(vec_1[1]-vec_2[1]) + (vec_1[2]-vec_2[2])*(vec_1[2]-vec_2[2]));
+}
+
+float mean(float p,float q)
+{
+  return (p+q)/2;
+}
+
 }
 
 
