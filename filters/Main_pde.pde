@@ -7,7 +7,7 @@ void setup(){
   stroke(255,0,15);
   output = createWriter("newMap.txt");
 
-  Filters filter = new Filters(anch,alt,"C:\\pol_lado1.txt",0,0,0,0);
+  Filters filter = new Filters(anch,alt,"C:\\figura_4_front.txt",0,0,0,0);
 
   filter.deleteSparePointsByDepth();
     int [][] mat = filter.getReducedMatrix();
@@ -136,12 +136,12 @@ boolean isNotACheckedPair(int[][][] pairs,int i,int j,int k,int m)
 }
 
 
-double euclideanDistance(int[] vec_1,int[] vec_2)
+double euclideanDistance(float[] vec_1,float[] vec_2)
 {
   return Math.sqrt((vec_1[0]*-vec_2[0])*(vec_1[0]*-vec_2[0]) + (vec_1[1]*-vec_2[1])*(vec_1[1]*-vec_2[1]) + (vec_1[2]*-vec_2[2])*(vec_1[2]*-vec_2[2]));
 }
 
-float mean(int p,int q)
+float mean(float p,float q)
 {
   return (p+q)/2.;
 }
