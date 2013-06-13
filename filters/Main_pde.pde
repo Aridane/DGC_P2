@@ -22,11 +22,12 @@ void setup(){
   frame.setResizable(true);
   output = createWriter("newMap.txt");
   
-  Filters filter0 = new Filters(320,240,"figura_4_front.txt",0,centerX,centerY, centerZ);
-  Filters filter1 = new Filters(320,240,"figura_4_perfil_1.txt",1,centerX,centerY, centerZ);
-  Filters filter2 = new Filters(320,240,"figura_4_perfil_2.txt",3,centerX,centerY, centerZ);
-  Filters filter3 = new Filters(320,240,"figura_4_tras.txt",2,centerX,centerY, centerZ);
-  
+
+  Filters filter0 = new Filters(320,240,"C:\\figura_4_front.txt",0,centerX,centerY, centerZ);
+  Filters filter1 = new Filters(320,240,"C:\\figura_4_perfil_1.txt",1,centerX,centerY, centerZ);
+  Filters filter2 = new Filters(320,240,"C:\\figura_4_perfil_2.txt",3,centerX,centerY, centerZ);
+  Filters filter3 = new Filters(320,240,"C:\\figura_4_tras.txt",2,centerX,centerY, centerZ);
+
   filter0.deleteSparePointsByDepth();
   filter1.deleteSparePointsByDepth();
   filter2.deleteSparePointsByDepth();
@@ -43,7 +44,7 @@ void setup(){
   output.close();
   
   
-  cheatingTool(filter0);
+ // cheatingTool(filter0);
   filter0.getSortedBorders();
   filter1.getSortedBorders();
   filter2.getSortedBorders();
@@ -51,6 +52,14 @@ void setup(){
   
   filter0.deleteUselessVertexes();
   filter1.deleteUselessVertexes();
+/*  for(int i=0;i<filter1.nBorders;i++)
+  {
+    for(int j=0;j<filter1.numberOfPointsPerBorder[i];j++)
+    {
+      //println("superficie " + i + " punto " + j + " = " + filter1.vertexes[i][j][0] + " " + filter1.vertexes[i][j][1] + " " + filter1.vertexes[i][j][2]);
+      println("superficie " + i + " punto " + j + " = " + filter1.sortedBorderPoints[i][j][0] + " " + filter1.sortedBorderPoints[i][j][1] + " " + filter1.sortedBorderPoints[i][j][2]);
+    }
+  }*/
   filter2.deleteUselessVertexes();
   filter3.deleteUselessVertexes();
   
@@ -77,7 +86,9 @@ void setup(){
   nvert[3] = filter3.vertexesCount;
 
   figura = new Figure(filterVerteces, nb, nvert);
-  //figura.matching(1);
+
+  figura.matching(20,100);
+
   figura.draw();
 }
 

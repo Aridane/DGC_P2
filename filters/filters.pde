@@ -276,7 +276,7 @@ public class Filters {
   {
     //Recorremos la matriz reducida, cuando encontramos un elemento !=0 obtenemos el borde al que pertenece y almacenamos ese borde.
     //recorremos el resto de puntos hasta que encontramos uno que no pertenece a un borde recorrido y lo usamos como nuevo punto inicial.
-    initialBorderPoints = new int[20][2];
+    initialBorderPoints = new int[20][3];
     int actualDepth = 0;
     numberOfPointsPerBorder = new int [20];
     int [] nPoints = new int[1];
@@ -290,11 +290,11 @@ public class Filters {
         {
           try
           {
-            //println("depth = " + actualDepth);
-            //println("point = " + point[0] + " " + point[1]);
             initialBorderPoints[nBorders] = point;
           
             if(sortBorder(point,actualDepth)) nBorders++;
+            //println("depth = " + actualDepth);
+            //println("point = " + point[0] + " " + point[1]);
           }
           catch (ArrayIndexOutOfBoundsException e)
           {
@@ -386,49 +386,49 @@ public class Filters {
   boolean getInitialDir(int[] dir,int x,int y,int depthVal)
   {
       //println("xy " + x + " " + y);
-      if((y+1 >= 0) && (x >= 0) && (y+1 < reducedData.length) && (x < reducedData[0].length) && (inRange(depthVal,y+1,x)))
+      if((y+1 >= 0) && (x >= 0) && (y+1 < reducedData.length) && (x < reducedData[0].length) && (inRangeInReduced(depthVal,y+1,x)))
       {
         dir[0] = 0;
         dir[1] = 1;
         return true;
       }
-      if((y >= 0) && (x+1 >= 0) && (y < reducedData.length) && (x+1 < reducedData[0].length) && (inRange(depthVal,y,x+1)))
+      if((y >= 0) && (x+1 >= 0) && (y < reducedData.length) && (x+1 < reducedData[0].length) && (inRangeInReduced(depthVal,y,x+1)))
       {
         dir[0] = 1;
         dir[1] = 0;
         return true;
       }
-      if((y+1 >= 0) && (x-1 >= 0) && (y+1 < reducedData.length) && (x-1 < reducedData[0].length) && (inRange(depthVal,y+1,x-1)))
+      if((y+1 >= 0) && (x-1 >= 0) && (y+1 < reducedData.length) && (x-1 < reducedData[0].length) && (inRangeInReduced(depthVal,y+1,x-1)))
       {
         dir[0] = -1;
         dir[1] = 1;
         return true;
       }
-      if((y-1 >= 0) && (x+1 >= 0) && (y-1 < reducedData.length) && (x+1 < reducedData[0].length) && (inRange(depthVal,y-1,x+1)))
+      if((y-1 >= 0) && (x+1 >= 0) && (y-1 < reducedData.length) && (x+1 < reducedData[0].length) && (inRangeInReduced(depthVal,y-1,x+1)))
       {
         dir[0] = 1;
         dir[1] = -1;
         return true;
       }
-      if((y-1 >= 0) && (x >= 0) && (y-1 < reducedData.length) && (x < reducedData[0].length) && (inRange(depthVal,y-1,x)))
+      if((y-1 >= 0) && (x >= 0) && (y-1 < reducedData.length) && (x < reducedData[0].length) && (inRangeInReduced(depthVal,y-1,x)))
       {
         dir[0] = 0;
         dir[1] = -1;
         return true;
       }
-      if((y >= 0) && (x-1 >= 0) && (y < reducedData.length) && (x-1 < reducedData[0].length) && (inRange(depthVal,y,x-1)))
+      if((y >= 0) && (x-1 >= 0) && (y < reducedData.length) && (x-1 < reducedData[0].length) && (inRangeInReduced(depthVal,y,x-1)))
       {
         dir[0] = -1;
         dir[1] = 0;
         return true;
       }
-      if((y+1 >= 0) && (x+1 >= 0) && (y+1 < reducedData.length) && (x+1 < reducedData[0].length) && (inRange(depthVal,y+1,x+1)))
+      if((y+1 >= 0) && (x+1 >= 0) && (y+1 < reducedData.length) && (x+1 < reducedData[0].length) && (inRangeInReduced(depthVal,y+1,x+1)))
       {
         dir[0] = 1;
         dir[1] = 1;
         return true;
       }
-      if((y-1 >= 0) && (x-1 >= 0) && (y-1 < reducedData.length) && (x-1 < reducedData[0].length) && (inRange(depthVal,y-1,x-1)))
+      if((y-1 >= 0) && (x-1 >= 0) && (y-1 < reducedData.length) && (x-1 < reducedData[0].length) && (inRangeInReduced(depthVal,y-1,x-1)))
       {
         dir[0] = -1;
         dir[1] = -1;
@@ -778,10 +778,15 @@ println("border " + borderPoints[initialIndex+i][0] + " " + borderPoints[initial
   
   void singlePixel2MM(int border,int indexPoint)
   {
-    vertexes[border][indexPoint][2] = vertexes[border][indexPoint][2]*705 / 1850;
-    vertexes[border][indexPoint][0] = vertexes[border][indexPoint][0] * vertexes[border][indexPoint][2] / 160;
-    vertexes[border][indexPoint][1] = vertexes[border][indexPoint][1] * vertexes[border][indexPoint][2] / 160;
+    vertexes[border][indexPoint][2] = raw2MM(vertexes[border][indexPoint][2]);
+    vertexes[border][indexPoint][0] = (2*vertexes[border][indexPoint][0]*vertexes[border][indexPoint][2]* 0.4771)/(0.8788*ancho);
+    vertexes[border][indexPoint][1] = (2*vertexes[border][indexPoint][1]*vertexes[border][indexPoint][2]* 0.3665)/(0.9304*alto);
 
+  }
+
+  float raw2MM(float depth)
+  {
+    return 0.3873*depth - 5.1808;
   }
 
 //Todos los puntos se convierten a un sistema de referencia con respecto al centroide del objeto
@@ -792,29 +797,29 @@ println("border " + borderPoints[initialIndex+i][0] + " " + borderPoints[initial
         //Para el borde "k" y el vertice "i"
         switch(view){
           case 0:
-            Nx = vertexes[k][i][0] - centroidX;
-            Ny = centroidY - vertexes[k][i][1];
-            Nz = centroidZ - vertexes[k][i][2]-30;
+            Nx = 496 - vertexes[k][i][2]*0.4771/0.8788 + vertexes[k][i][0];
+            Ny = vertexes[k][i][1];
+            Nz = 2*496 - vertexes[k][i][2] - 80;
           break;
           case 1:
-            Nx = centroidX - vertexes[k][i][2];
-            Ny = centroidY - vertexes[k][i][1];
-            Nz = -centroidZ + vertexes[k][i][0];
+            Nx = 2*496 - vertexes[k][i][2] - 80;
+            Ny = vertexes[k][i][1];
+            Nz = 496 + vertexes[k][i][2]*0.4771/0.8788 - vertexes[k][i][0];
           break;
-          case 2:
-            Nx = -centroidX + vertexes[k][i][0];
-            Ny = centroidY - vertexes[k][i][1];
-            Nz = vertexes[k][i][2] - centroidZ-90;
+          case 2:         
+            Nx = 496 - vertexes[k][i][2]*0.4771/0.8788 + vertexes[k][i][0];
+            Ny = vertexes[k][i][1];
+            Nz = vertexes[k][i][2] + 80;
           break;
           case 3:
-            Nx = vertexes[k][i][2] - centroidX-80;
-            Ny = centroidY - vertexes[k][i][1];
-            Nz = vertexes[k][i][0] - centroidZ;
+            Nx = vertexes[k][i][2] + 80;
+            Ny = vertexes[k][i][1];
+            Nz = 496 - vertexes[k][i][2]*0.4771/0.8788 + vertexes[k][i][0];
           break;
         }
-        vertexes[k][i][0] = (Nx) + width/2;
-        vertexes[k][i][1] = (-Ny) + height/2;
-        vertexes[k][i][2] = (Nz);
+        vertexes[k][i][0] = Nx;
+        vertexes[k][i][1] = Ny + 100;
+        vertexes[k][i][2] = Nz - 300;
       }
     }
   }

@@ -386,14 +386,14 @@ class Figure{
   }*/
 
 
-void matching(int threshold)
+void matching(float altitude,float threshold)
 {
-  singleMatching(0,1,threshold);
-  singleMatching(0,3,threshold);
-  singleMatching(0,2,threshold);
-  singleMatching(1,3,threshold);
-  singleMatching(1,2,threshold);
-  singleMatching(3,2,threshold);
+  singleMatching(0,1,altitude,threshold);
+  singleMatching(0,3,altitude,threshold);
+  singleMatching(0,2,altitude,threshold);
+  singleMatching(1,3,altitude,threshold);
+  singleMatching(1,2,altitude,threshold);
+  singleMatching(3,2,altitude,threshold);
   for(int i=0;i<4;i++)
   {
     for(int j=0;j<verteces[i].length;j++)
@@ -403,6 +403,7 @@ void matching(int threshold)
         for(int m=0;m<verteces[i][j][k].length;m++)
         {
           verteces[i][j][k][m] = auxVerteces[i][j][k][m];
+          tVerteces[i][j][k][m] = auxVerteces[i][j][k][m];
         }
       }
     }
@@ -411,7 +412,7 @@ void matching(int threshold)
 
 
 
-void singleMatching(int index_1,int index_2,int threshold)
+void singleMatching(int index_1,int index_2,float altitude,float threshold)
 {
   int max1 = getMaxNumberOfPoints(index_1);
   int max2 = getMaxNumberOfPoints(index_2);
@@ -426,10 +427,10 @@ void singleMatching(int index_1,int index_2,int threshold)
       {
         for(int m=0;m<nVerteces[index_2][j];m++)
         {
-  //        if(isNotACheckedPair(pairs,i,j,k,m))
-  //        {
+          //if(isNotACheckedPair(pairs,i,j,k,m))
+          //{
             println("distancia = " + euclideanDistance(verteces[index_1][i][k],verteces[index_2][j][m]));
-            if(euclideanDistance(verteces[index_1][i][k],verteces[index_2][j][m]) < threshold)
+            if(altitudeRange(verteces[index_1][i][k][1],verteces[index_2][j][m][1],altitude) && euclideanDistance(verteces[index_1][i][k],verteces[index_2][j][m]) < threshold)
             {
               println("CAMBIO");
               auxVerteces[index_1][i][k][0] = mean(verteces[index_1][i][k][0],verteces[index_2][j][m][0]);
@@ -467,6 +468,13 @@ void singleMatching(int index_1,int index_2,int threshold)
       //pairIndex_1++;
     }
   }
+}
+
+
+boolean altitudeRange(float n1,float n2,float altitude)
+{
+  if(abs(n1-n2) <= altitude) return true;
+  else return false;
 }
 
 int getMaxNumberOfPoints(int index)
