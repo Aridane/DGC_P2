@@ -57,7 +57,7 @@ void setup(){
   nvert[3] = filter3.vertexesCount;
 
   figura = new Figure(filterVerteces, nb, nvert);
-  figura.matching(100);
+  figura.matching(60);
   figura.draw();
 }
 
