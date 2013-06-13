@@ -1,3 +1,15 @@
+float [][] multiplyMatrix(float v[][], float R[][], int n1, int  m1, int m2) {
+  // v x R
+  float [][] M = new float[n1][m2];
+  for (int i=0;i<n1;i++) {
+    for (int j=0;j<m2;j++) {
+      for (int k=0;k<m1;k++) {
+        M[i][j] += v[i][k] * R[k][j];
+      }
+    }
+  }
+  return M;
+}
 class Figure{
   float [][][][] verteces;
   float [][][][] tVerteces;
@@ -79,26 +91,91 @@ class Figure{
   //TODO Crear funcion miLinea, la cual aparte de dibujar la línea aplica la perspectiva.
   //buttonsPressed[6],buttonsPressed[7],buttonsPressed[8]
   void draw() {
+    background(128,128,128);
     for (int h=0;h<4;h++){
       for (int i=0;i<nBorders[h];i++){
-        stroke(random(255),random(255),random(255));
         for (int j=0;j<nVerteces[h][i];j++){
-          myLine(verteces[h][i][j],verteces[h][i][(j+1)%nVerteces[h][i]]);
+          //if (tVerteces[h][i][(j+1)%nVerteces[h][i]])
+          myLine(tVerteces[h][i][j],tVerteces[h][i][(j+1)%nVerteces[h][i]]);
         }
       }
     }
   }
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
+
+ void rotate(float angleX, float angleY, float iniRotX, float iniRotY) {
+    float[][] Rx = {  
+      {
+        1, 0, 0, 0
+      }
+      , 
+      {
+        0, cos(angleX), sin(angleX), 0
+      }
+      , 
+      {
+        0, -sin(angleX), cos(angleX), 0
+      }
+      , 
+      {
+        0, 0, 0, 1
+      }
+    };
+    float[][] Ry = {  
+      {
+        cos(angleY), 0, -sin(angleY), 0
+      }
+      , 
+      {
+        0, 1, 0, 0
+      }
+      , 
+      {
+        sin(angleY), 0, cos(angleY), 0
+      }
+      , 
+      {
+        0, 0, 0, 1
+      }
+    };
+    float [][] T = {
+      {
+        1, 0, 0, 0
+      }
+      , 
+      {
+        0, 1, 0, 0
+      }
+      , 
+      {
+        0, 0, 1, 0
+      }
+      , 
+      {
+        -iniRotX, -iniRotY, 0, 1
+      }
+    };
+    float [][] aux = multiplyMatrix(T, Rx, 4, 4, 4);
+    aux = multiplyMatrix(aux, Ry, 4, 4, 4);
+    T[3][0] = +iniRotX;
+    T[3][1] = +iniRotY;
+    aux = multiplyMatrix(aux, T, 4, 4, 4);
+    tMatrix = multiplyMatrix(tMatrix, aux, 4, 4, 4);
+    
+    for (int i=0;i<4;i++) println(tMatrix[i][0]+" "+tMatrix[i][1]+" "+tMatrix[i][2]+" "+tMatrix[i][3]);
+      
+    
+    println("PREV CHANGE");
+    for (int h=0;h<4;h++){
+      for (int i=0;i<nBorders[h];i++){
+        tVerteces[h][i] = multiplyMatrix(verteces[h][i], tMatrix, nVerteces[h][i], 4, 4);
+      }
+    }
+    
+
+  }
+
+
   /*void translate (float x, float y, float z, boolean [] options, float k) {
     //Traslación 
     float [][] T = {
