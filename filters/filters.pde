@@ -779,10 +779,15 @@ println("border " + borderPoints[initialIndex+i][0] + " " + borderPoints[initial
   
   void singlePixel2MM(int border,int indexPoint)
   {
-    vertexes[border][indexPoint][2] = vertexes[border][indexPoint][2]*705 / 1850;
-    vertexes[border][indexPoint][0] = vertexes[border][indexPoint][0] * vertexes[border][indexPoint][2] / 160;
-    vertexes[border][indexPoint][1] = vertexes[border][indexPoint][1] * vertexes[border][indexPoint][2] / 160;
+    vertexes[border][indexPoint][2] = raw2MM(vertexes[border][indexPoint][2]);
+    vertexes[border][indexPoint][0] = (2*vertexes[border][indexPoint][0]*vertexes[border][indexPoint][2]* 0.4771)/(0.8788*ancho);
+    vertexes[border][indexPoint][1] = (2*vertexes[border][indexPoint][1]*vertexes[border][indexPoint][2]* 0.3665)/(0.9304*alto);
 
+  }
+
+  float raw2MM(float depth)
+  {
+    return 0.3873*depth - 5.1808;
   }
 
 //Todos los puntos se convierten a un sistema de referencia con respecto al centroide del objeto
@@ -793,29 +798,29 @@ println("border " + borderPoints[initialIndex+i][0] + " " + borderPoints[initial
         //Para el borde "k" y el vertice "i"
         switch(view){
           case 0:
-            Nx = vertexes[k][i][0] - centroidX;
-            Ny = centroidY - vertexes[k][i][1];
-            Nz = centroidZ - vertexes[k][i][2];
+            Nx = 496 - vertexes[k][i][2]*0.4771/0.8788 + vertexes[k][i][0];
+            Ny = vertexes[k][i][1];
+            Nz = 2*496 - vertexes[k][i][2] - 80;
           break;
           case 1:
-            Nx = centroidX - vertexes[k][i][2];
-            Ny = centroidY - vertexes[k][i][1];
-            Nz = -centroidZ + vertexes[k][i][0];
+            Nx = 2*496 - vertexes[k][i][2] - 80;
+            Ny = vertexes[k][i][1];
+            Nz = 496 + vertexes[k][i][2]*0.4771/0.8788 - vertexes[k][i][0];
           break;
-          case 2:
-            Nx = -centroidX + vertexes[k][i][0];
-            Ny = centroidY - vertexes[k][i][1];
-            Nz = vertexes[k][i][2] - centroidZ;
+          case 2:         
+            Nx = 496 - vertexes[k][i][2]*0.4771/0.8788 + vertexes[k][i][0];
+            Ny = vertexes[k][i][1];
+            Nz = vertexes[k][i][2] + 80;
           break;
           case 3:
-            Nx = vertexes[k][i][2] - centroidX-80;
-            Ny = centroidY - vertexes[k][i][1];
-            Nz = vertexes[k][i][0] - centroidZ;
+            Nx = vertexes[k][i][2] + 80;
+            Ny = vertexes[k][i][1];
+            Nz = 496 - vertexes[k][i][2]*0.4771/0.8788 + vertexes[k][i][0];
           break;
         }
-        vertexes[k][i][0] = (Nx) + width/2;
-        vertexes[k][i][1] = (-Ny) + height/2;
-        vertexes[k][i][2] = (Nz);
+        vertexes[k][i][0] = Nx;
+        vertexes[k][i][1] = Ny + 100;
+        vertexes[k][i][2] = Nz - 300;
       }
     }
   }
