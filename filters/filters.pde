@@ -16,7 +16,7 @@ public class Filters {
   private int nBorders = 0;
   private BufferedReader rawReader;
   private int maxDepth = 0;
-  private int limitThres = 390;
+  private int limitThres = 360;
   private int neighbourThres = 9;
   private int neighbourDepthThres = 40;
   private int centroidX, centroidY, centroidZ;
@@ -208,6 +208,7 @@ public class Filters {
           }
         }
       }
+      if ((i == 239)&&(j==150)) println("COUNTER "+counter);
       if (counter < neighbourThres) {
         neighbourThres = oldNeighbourThres;
         return true;
@@ -240,6 +241,7 @@ public class Filters {
       }
       if (counter < neighbourThres) return true;
     }
+    
     return false;
   }
 
@@ -249,14 +251,22 @@ public class Filters {
     for (int i=0;i<frameDimensions[1];i++) {
       for (int j=0;j<frameDimensions[0];j++) {
         actualDepth = rawData[i][j];
-        if ((actualDepth > (maxDepth - limitThres)) || (actualDepth < 200)) {
+        if ((i == 230)&&(j==150)) println("DEPTH "+actualDepth);
+        if ((actualDepth > (maxDepth - limitThres)) || (actualDepth < 100)) {
           reducedData[i][j] = 0;
         }
         else {
           if (!checkNeighbours(actualDepth, i, j)) reducedData[i][j] = 0;
           else reducedData[i][j] = actualDepth;
+          if ((i == 230)&&(j==150)) println("DEPTH N "+reducedData[i][j]);
         }
       }
+    }
+    for (int i=0;i<frameDimensions[1];i++) {
+      for (int j=0;j<frameDimensions[0];j++) {
+        debug.print(reducedData[i][j] +" ");
+      }
+      debug.println();
     }
     return null;
   }
@@ -790,7 +800,7 @@ println("border " + borderPoints[initialIndex+i][0] + " " + borderPoints[initial
           case 1:
             Nx = centroidX - vertexes[k][i][2];
             Ny = centroidY - vertexes[k][i][1];
-            Nz = centroidZ - vertexes[k][i][0];
+            Nz = -centroidZ + vertexes[k][i][0];
           break;
           case 2:
             Nx = -centroidX + vertexes[k][i][0];
