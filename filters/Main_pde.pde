@@ -198,7 +198,7 @@ void mouseDragged(){
   dragX = mouseX;
   dragY = mouseY;
   println("DRAG");
-  figura.rotate((+prevDragY-dragY)*0.02,(-prevDragX+dragX)*0.02,iniPressedX, iniPressedY);
+  figura.rotate((+prevDragY-dragY)*0.015,(-prevDragX+dragX)*0.015,iniPressedX, iniPressedY);
   
   prevDragX = mouseX;
   prevDragY = mouseY;
