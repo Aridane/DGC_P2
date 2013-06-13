@@ -18,14 +18,14 @@ void setup(){
   size(1024, 512);
   background(102);
   stroke(255,0,15);
-  //loop();
+  loop();
   frame.setResizable(true);
   output = createWriter("newMap.txt");
   
-  Filters filter0 = new Filters(320,240,"C:\\figura_4_front.txt",0,centerX,centerY, centerZ);
-  Filters filter1 = new Filters(320,240,"C:\\figura_4_perfil_1.txt",1,centerX,centerY, centerZ);
-  Filters filter2 = new Filters(320,240,"C:\\figura_4_perfil_2.txt",3,centerX,centerY, centerZ);
-  Filters filter3 = new Filters(320,240,"C:\\figura_4_tras.txt",2,centerX,centerY, centerZ);
+  Filters filter0 = new Filters(320,240,"figura_4_front.txt",0,centerX,centerY, centerZ);
+  Filters filter1 = new Filters(320,240,"figura_4_perfil_1.txt",1,centerX,centerY, centerZ);
+  Filters filter2 = new Filters(320,240,"figura_4_perfil_2.txt",3,centerX,centerY, centerZ);
+  Filters filter3 = new Filters(320,240,"figura_4_tras.txt",2,centerX,centerY, centerZ);
   
   filter0.deleteSparePointsByDepth();
   filter1.deleteSparePointsByDepth();
@@ -77,7 +77,7 @@ void setup(){
   nvert[3] = filter3.vertexesCount;
 
   figura = new Figure(filterVerteces, nb, nvert);
-  figura.matching(200);
+  //figura.matching(1);
   figura.draw();
 }
 

@@ -208,7 +208,6 @@ public class Filters {
           }
         }
       }
-      if ((i == 239)&&(j==150)) println("COUNTER "+counter);
       if (counter < neighbourThres) {
         neighbourThres = oldNeighbourThres;
         return true;
@@ -252,7 +251,7 @@ public class Filters {
       for (int j=0;j<frameDimensions[0];j++) {
         actualDepth = rawData[i][j];
         if ((i == 230)&&(j==150)) println("DEPTH "+actualDepth);
-        if ((actualDepth > (maxDepth - limitThres)) || (actualDepth < 100)) {
+        if ((actualDepth > (maxDepth - limitThres)) || (actualDepth < 300)) {
           reducedData[i][j] = 0;
         }
         else {
@@ -795,7 +794,7 @@ println("border " + borderPoints[initialIndex+i][0] + " " + borderPoints[initial
           case 0:
             Nx = vertexes[k][i][0] - centroidX;
             Ny = centroidY - vertexes[k][i][1];
-            Nz = centroidZ - vertexes[k][i][2];
+            Nz = centroidZ - vertexes[k][i][2]-30;
           break;
           case 1:
             Nx = centroidX - vertexes[k][i][2];
@@ -805,7 +804,7 @@ println("border " + borderPoints[initialIndex+i][0] + " " + borderPoints[initial
           case 2:
             Nx = -centroidX + vertexes[k][i][0];
             Ny = centroidY - vertexes[k][i][1];
-            Nz = vertexes[k][i][2] - centroidZ;
+            Nz = vertexes[k][i][2] - centroidZ-90;
           break;
           case 3:
             Nx = vertexes[k][i][2] - centroidX-80;

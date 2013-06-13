@@ -168,8 +168,6 @@ class Figure{
     
     for (int i=0;i<4;i++) println(tMatrix[i][0]+" "+tMatrix[i][1]+" "+tMatrix[i][2]+" "+tMatrix[i][3]);
       
-    
-    println("PREV CHANGE");
     for (int h=0;h<4;h++){
       for (int i=0;i<nBorders[h];i++){
         tVerteces[h][i] = multiplyMatrix(verteces[h][i], tMatrix, nVerteces[h][i], 4, 4);
