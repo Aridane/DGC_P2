@@ -1,4 +1,11 @@
 PrintWriter output;
+float dragX, dragY;
+float iniPressedX;
+float iniPressedY;
+
+float prevDragX;
+float prevDragY;
+
 int alt = 240;
 int anch = 320;
 int centerX = 410;
@@ -10,6 +17,7 @@ void setup(){
   size(1240, 768);
   background(102);
   stroke(255,0,15);
+  loop();
   frame.setResizable(true);
   output = createWriter("newMap.txt");
   
@@ -76,3 +84,24 @@ void matching(Filters front,Filters perfil_1,Filters perfil_2,Filters tras,int t
 {
   //for(int i=0;i<front.nBorders;i++)
 }
+
+void mousePressed() {
+  if (mouseButton == LEFT) {
+    println("LEFT CLICK");
+    prevDragX = mouseX;
+    prevDragY = mouseY;
+    iniPressedX = mouseX;
+    iniPressedY = mouseY;
+  }
+}
+void mouseDragged(){
+  dragX = mouseX;
+  dragY = mouseY;
+  println("DRAG");
+  figura.rotate((+prevDragY-dragY)*0.02,(-prevDragX+dragX)*0.02,iniPressedX, iniPressedY);
+  
+  prevDragX = mouseX;
+  prevDragY = mouseY;
+    
+}
+
