@@ -277,7 +277,7 @@ public class Filters {
   {
     //Recorremos la matriz reducida, cuando encontramos un elemento !=0 obtenemos el borde al que pertenece y almacenamos ese borde.
     //recorremos el resto de puntos hasta que encontramos uno que no pertenece a un borde recorrido y lo usamos como nuevo punto inicial.
-    initialBorderPoints = new int[20][2];
+    initialBorderPoints = new int[20][3];
     int actualDepth = 0;
     numberOfPointsPerBorder = new int [20];
     int [] nPoints = new int[1];
@@ -291,11 +291,11 @@ public class Filters {
         {
           try
           {
-            //println("depth = " + actualDepth);
-            //println("point = " + point[0] + " " + point[1]);
             initialBorderPoints[nBorders] = point;
           
             if(sortBorder(point,actualDepth)) nBorders++;
+            //println("depth = " + actualDepth);
+            //println("point = " + point[0] + " " + point[1]);
           }
           catch (ArrayIndexOutOfBoundsException e)
           {
@@ -387,49 +387,49 @@ public class Filters {
   boolean getInitialDir(int[] dir,int x,int y,int depthVal)
   {
       //println("xy " + x + " " + y);
-      if((y+1 >= 0) && (x >= 0) && (y+1 < reducedData.length) && (x < reducedData[0].length) && (inRange(depthVal,y+1,x)))
+      if((y+1 >= 0) && (x >= 0) && (y+1 < reducedData.length) && (x < reducedData[0].length) && (inRangeInReduced(depthVal,y+1,x)))
       {
         dir[0] = 0;
         dir[1] = 1;
         return true;
       }
-      if((y >= 0) && (x+1 >= 0) && (y < reducedData.length) && (x+1 < reducedData[0].length) && (inRange(depthVal,y,x+1)))
+      if((y >= 0) && (x+1 >= 0) && (y < reducedData.length) && (x+1 < reducedData[0].length) && (inRangeInReduced(depthVal,y,x+1)))
       {
         dir[0] = 1;
         dir[1] = 0;
         return true;
       }
-      if((y+1 >= 0) && (x-1 >= 0) && (y+1 < reducedData.length) && (x-1 < reducedData[0].length) && (inRange(depthVal,y+1,x-1)))
+      if((y+1 >= 0) && (x-1 >= 0) && (y+1 < reducedData.length) && (x-1 < reducedData[0].length) && (inRangeInReduced(depthVal,y+1,x-1)))
       {
         dir[0] = -1;
         dir[1] = 1;
         return true;
       }
-      if((y-1 >= 0) && (x+1 >= 0) && (y-1 < reducedData.length) && (x+1 < reducedData[0].length) && (inRange(depthVal,y-1,x+1)))
+      if((y-1 >= 0) && (x+1 >= 0) && (y-1 < reducedData.length) && (x+1 < reducedData[0].length) && (inRangeInReduced(depthVal,y-1,x+1)))
       {
         dir[0] = 1;
         dir[1] = -1;
         return true;
       }
-      if((y-1 >= 0) && (x >= 0) && (y-1 < reducedData.length) && (x < reducedData[0].length) && (inRange(depthVal,y-1,x)))
+      if((y-1 >= 0) && (x >= 0) && (y-1 < reducedData.length) && (x < reducedData[0].length) && (inRangeInReduced(depthVal,y-1,x)))
       {
         dir[0] = 0;
         dir[1] = -1;
         return true;
       }
-      if((y >= 0) && (x-1 >= 0) && (y < reducedData.length) && (x-1 < reducedData[0].length) && (inRange(depthVal,y,x-1)))
+      if((y >= 0) && (x-1 >= 0) && (y < reducedData.length) && (x-1 < reducedData[0].length) && (inRangeInReduced(depthVal,y,x-1)))
       {
         dir[0] = -1;
         dir[1] = 0;
         return true;
       }
-      if((y+1 >= 0) && (x+1 >= 0) && (y+1 < reducedData.length) && (x+1 < reducedData[0].length) && (inRange(depthVal,y+1,x+1)))
+      if((y+1 >= 0) && (x+1 >= 0) && (y+1 < reducedData.length) && (x+1 < reducedData[0].length) && (inRangeInReduced(depthVal,y+1,x+1)))
       {
         dir[0] = 1;
         dir[1] = 1;
         return true;
       }
-      if((y-1 >= 0) && (x-1 >= 0) && (y-1 < reducedData.length) && (x-1 < reducedData[0].length) && (inRange(depthVal,y-1,x-1)))
+      if((y-1 >= 0) && (x-1 >= 0) && (y-1 < reducedData.length) && (x-1 < reducedData[0].length) && (inRangeInReduced(depthVal,y-1,x-1)))
       {
         dir[0] = -1;
         dir[1] = -1;
