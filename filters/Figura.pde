@@ -1,10 +1,10 @@
 class Figure{
-  float [][][] verteces;
-  float [][][] tVerteces;
+  float [][][][] verteces;
+  float [][][][] tVerteces;
 
-  int nBorders = 0;
+  int [] nBorders;
     
-  float [] nVerteces;
+  int [][] nVerteces;
     
   float [] colour = new float[3];
   
@@ -27,22 +27,66 @@ class Figure{
   PVector centroid;
 
 
-  Figure(int[][][] vert, int nb, int [] nvert) {
-    nVerteces = new float[nb];
-    verteces = new float[nb][][];
-    for (int i=0;i<nb;i++){
-      nVerteces[i] = nvert[i];
-      verteces[i] = new float[nvert[i]][3];
-      for (int j=0;j<nvert[i];j++){
-        for (int k=0;k<3;k++) verteces[i][j][k] = vert[i][j][k];
+  Figure(float [][][][] vert, int [] nb, int [][] nvert) {
+    nVerteces = new int[4][];
+    verteces = new float[4][][][];
+    tVerteces = new float[4][][][];
+    nBorders = new int[4];
+    for (int h=0;h<4;h++){
+      nVerteces[h] = new int[nb[h]];
+      verteces[h] = new float[nb[h]][][];
+      tVerteces[h] = new float[nb[h]][][];
+      nBorders[h] = nb[h];
+      for (int i=0;i<nb[h];i++){
+        nVerteces[h][i] = nvert[h][i];
+        verteces[h][i] = new float[nvert[h][i]][4];
+        tVerteces[h][i] = new float[nvert[h][i]][4];
+        for (int j=0;j<nvert[h][i];j++){
+          verteces[h][i][j][0] = vert[h][i][j][0];
+          tVerteces[h][i][j][0] = vert[h][i][j][0];
+          
+          verteces[h][i][j][1] = vert[h][i][j][1];
+          tVerteces[h][i][j][1] = vert[h][i][j][1];
+          
+          verteces[h][i][j][2] = vert[h][i][j][2];
+          tVerteces[h][i][j][2] = vert[h][i][j][2];
+
+          verteces[h][i][j][3] = 1;
+          tVerteces[h][i][j][3] = 1;
+        }
       }
     }
-    nBorders = nb;
+  }
+  int k = 400;
+  void myLine(float [] v0, float [] v1) {
+    float aux0X = v0[0], aux0Y = v0[1], aux1X = v1[0], aux1Y = v1[1];
+        aux0X= aux0X-width/2.;
+        aux0Y= aux0Y-height/2.;
+        aux1X= aux1X-width/2.;
+        aux1Y= aux1Y-height/2.;
+    
+        aux0X= aux0X/(1.-(v0[2]/k));
+        aux0Y= aux0Y/(1.-(v0[2]/k));
+        aux1X= aux1X/(1.-(v1[2]/k));
+        aux1Y= aux1Y/(1.-(v1[2]/k));
+        
+        aux0X= aux0X+width/2.;
+        aux0Y= aux0Y+height/2.;
+        aux1X= aux1X+width/2.;
+        aux1Y= aux1Y+height/2.;
+    line(aux0X, aux0Y, aux1X, aux1Y);
   }
   //TODO Crear funcion miLinea, la cual aparte de dibujar la línea aplica la perspectiva.
   //buttonsPressed[6],buttonsPressed[7],buttonsPressed[8]
   void draw() {
-
+    for (int h=0;h<4;h++){
+      for (int i=0;i<nBorders[h];i++){
+        stroke(random(255),random(255),random(255));
+        for (int j=0;j<nVerteces[h][i];j++){
+          myLine(verteces[h][i][j],verteces[h][i][(j+1)%nVerteces[h][i]]);
+        }
+      }
+    }
   }
   
   
