@@ -23,10 +23,10 @@ void setup(){
   output = createWriter("newMap.txt");
   
 
-  Filters filter0 = new Filters(320,240,"C:\\figura_4_front.txt",0,centerX,centerY, centerZ);
-  Filters filter1 = new Filters(320,240,"C:\\figura_4_perfil_1.txt",1,centerX,centerY, centerZ);
-  Filters filter2 = new Filters(320,240,"C:\\figura_4_perfil_2.txt",3,centerX,centerY, centerZ);
-  Filters filter3 = new Filters(320,240,"C:\\figura_4_tras.txt",2,centerX,centerY, centerZ);
+  Filters filter0 = new Filters(320,240,"figura_4_front.txt",0,centerX,centerY, centerZ);
+  Filters filter1 = new Filters(320,240,"figura_4_perfil_1.txt",1,centerX,centerY, centerZ);
+  Filters filter2 = new Filters(320,240,"figura_4_perfil_2.txt",3,centerX,centerY, centerZ);
+  Filters filter3 = new Filters(320,240,"figura_4_tras.txt",2,centerX,centerY, centerZ);
 
   filter0.deleteSparePointsByDepth();
   filter1.deleteSparePointsByDepth();
